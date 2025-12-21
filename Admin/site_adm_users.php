@@ -1,34 +1,34 @@
 <?php 
 session_start();
-	if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"])){
+if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"])){
 		
-		$titulo="USUARIOS ADMINISTRADORES";
-		require_once("../autoload.php");	
-		global $relaciones;
-		$gf=new generalFunctions;
-		$dataTables=new dsTables();
-		$actividad=$gf->cleanVar($_GET["flag"]);
-		$sender=$_SERVER['PHP_SELF'];
-		$hnd=1;
-		$tabla="usuarios";
-		$rigu=array(1,1,1,1);
-		if($actividad=="ver"){
-			if($_SESSION["restprofile"]!="A") exit;
-			$shapas=hash('sha512','1234567');
-			$gf->dataIn("UPDATE usuarios SET PASSWORD=:defpass WHERE PASSWORD=:nulo",array(":defpass"=>$shapas,":nulo"=>""));
-	
-			$bnf="";
-			$cond=" AND 1";
-			
-			$bnf2="<button class='btn btn-xs btn-success pull-right' onclick=\"getDialog('$sender?flag=nuevo&hnd=$hnd')\"><span class='glyphicon glyphicon-plus-sign'></span>Nuevo usuario</button>";
-			$cond1="1 ";
-			
-			$resultInt = $gf->dataSet("SELECT U.ID_USUARIO, CONCAT(U.NOMBRES,' ',U.APELLIDOS) AS NOMBRE, U.PERFIL, U.CORREO, U.ESTADO, E.ID_CLIENT FROM usuarios U JOIN sitios E ON U.ID_SITIO=E.ID_SITIO WHERE E.ID_SITIO=:sitio",array(":sitio"=>$_SESSION["restbus"]));
-	
-			echo $gf->utf8("<div class='panel panel-default'><div class='panel-heading'>USUARIOS DEL SISTEMA $bnf $bnf2 </div><div class='panel-body'><input type='text' class='form-control' id='schus' onkeyup=\"filtrarValores('schus','thus')\" placeholder='Buscar Usuario' /><br /><div class='row'>");
+	$titulo="USUARIOS ADMINISTRADORES";
+	require_once("../autoload.php");	
+	global $relaciones;
+	$gf=new generalFunctions;
+	$dataTables=new dsTables();
+	$actividad=$gf->cleanVar($_GET["flag"]);
+	$sender=$_SERVER['PHP_SELF'];
+	$hnd=1;
+	$tabla="usuarios";
+	$rigu=array(1,1,1,1);
+	if($actividad=="ver"){
+		if($_SESSION["restprofile"]!="A") exit;
+		$shapas=hash('sha512','1234567');
+		$gf->dataIn("UPDATE usuarios SET PASSWORD=:defpass WHERE PASSWORD=:nulo",array(":defpass"=>$shapas,":nulo"=>""));
 
-			if($resultInt!=false && count($resultInt)>0){
-				foreach($resultInt as $rowInt){
+		$bnf="";
+		$cond=" AND 1";
+		
+		$bnf2="<button class='btn btn-sm btn-success' onclick=\"getDialog('$sender?flag=nuevo&hnd=$hnd')\"><i class='fa fa-plus'></i> Nuevo Usuario</button>";
+		$cond1="1 ";
+		
+		$resultInt = $gf->dataSet("SELECT U.ID_USUARIO, CONCAT(U.NOMBRES,' ',U.APELLIDOS) AS NOMBRE, U.PERFIL, U.CORREO, U.ESTADO, E.ID_CLIENT FROM usuarios U JOIN sitios E ON U.ID_SITIO=E.ID_SITIO WHERE E.ID_SITIO=:sitio",array(":sitio"=>$_SESSION["restbus"]));
+
+		echo $gf->utf8("<div class='box box-primary'><div class='box-header with-border'><h3 class='box-title'><i class='fa fa-users'></i> Usuarios del Sistema</h3><div class='box-tools pull-right'>$bnf2</div></div><div class='box-body'><div class='row'><div class='col-md-12'><div class='input-group input-group-sm' style='margin-bottom:15px;'><span class='input-group-addon'><i class='fa fa-search'></i></span><input type='text' class='form-control' id='schus' onkeyup=\"filtrarValores('schus','thus')\" placeholder='Buscar Usuario' /></div></div></div><div class='row'>");
+
+		if($resultInt!=false && count($resultInt)>0){
+			foreach($resultInt as $rowInt){
 					$id_usuario=$rowInt["ID_USUARIO"];
 					$nombre=$rowInt["NOMBRE"];
 					$lgn=$rowInt["CORREO"];
@@ -60,35 +60,36 @@ session_start();
 					}
 				
 					if($estado==1){
-						$pnel="default";
-					}else{
-						$pnel="danger";
-					}
-					
-					echo $gf->utf8("<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12 filtrable thus'><div id='elm_user_$id_usuario' class='panel panel-$pnel' style='height:150px;'><div class='panel-heading'>$perfile");
-					if($rigu[1]==1){
-						echo $gf->utf8("<button class='btn btn-xs btn-warning pull-right' id='edit_$id_usuario' alt='Editar informaci&oacute;n'  title='Editar informaci&oacute;n' onclick=\"getDialog('$sender?flag=editar&amp;Vkey=$id_usuario&hnd=$hnd')\"><i class='fa fa-edit'></i></button>");
-					}
-
-
-					if($rigu[2]==1){
-						if($tocado==0){
-							echo $gf->utf8("<button class='btn btn-xs btn-info pull-right' id='del_$id_usuario' alt='Borrar Usuario' title='Borrar Usuario' onclick=\"goErase('usuarios','ID_USUARIO','$id_usuario','elm_user_$id_usuario','1')\"><i class='link fa fa-remove'></i></button>");
-						}
-					}
-					if($rigu[1]==1 && $lgn!="datafeed@".$clientid){
-						echo $gf->utf8("<button class='btn btn-xs btn-info pull-right' id='del_$id_usuario' alt='Resetear Clave' title='Resetear Clave' onclick=\"getDialog('$sender?flag=resetkey&id_user=$id_usuario&hnd=$hnd','400')\" ><i class='link fa fa-unlock'></i></button>");
-					}
-					
-			
-					echo $gf->utf8("</div><div class='panel-body'><table class='table'><tr><td>$avatar</td><td>$nombre<br />$lgn</td></tr><tr><td align='right'></td></tr></table></div></div></div>");
-					
+					$pnel="primary";
+					$statusBadge="<span class='label label-success pull-right'>Activo</span>";
+				}else{
+					$pnel="danger";
+					$statusBadge="<span class='label label-danger pull-right'>Inactivo</span>";
 				}
 				
+				echo $gf->utf8("<div class='col-lg-4 col-md-6 col-sm-6 col-xs-12 filtrable thus'><div id='elm_user_$id_usuario' class='box box-widget widget-user-2'><div class='widget-user-header bg-$pnel'><div class='widget-user-image'>$avatar</div><h3 class='widget-user-username'>$nombre</h3><h5 class='widget-user-desc'>$perfile $statusBadge</h5></div><div class='box-footer no-padding'><ul class='nav nav-stacked'><li><a href='#'>$lgn</a></li></ul></div><div class='box-footer'><div class='btn-group btn-group-sm pull-right'>");
+				
+				if($rigu[1]==1){
+					echo $gf->utf8("<button class='btn btn-warning' id='edit_$id_usuario' alt='Editar informaci&oacute;n' title='Editar informaci&oacute;n' onclick=\"getDialog('$sender?flag=editar&amp;Vkey=$id_usuario&hnd=$hnd')\"><i class='fa fa-edit'></i></button>");
+				}
+
+				if($rigu[1]==1 && $lgn!="datafeed@".$clientid){
+					echo $gf->utf8("<button class='btn btn-info' id='del_$id_usuario' alt='Resetear Clave' title='Resetear Clave' onclick=\"getDialog('$sender?flag=resetkey&id_user=$id_usuario&hnd=$hnd','400')\"><i class='fa fa-unlock'></i></button>");
+				}
+
+				if($rigu[2]==1){
+					if($tocado==0){
+						echo $gf->utf8("<button class='btn btn-danger' id='del_$id_usuario' alt='Borrar Usuario' title='Borrar Usuario' onclick=\"goErase('usuarios','ID_USUARIO','$id_usuario','elm_user_$id_usuario','1')\"><i class='fa fa-trash'></i></button>");
+					}
+				}
+				
+				echo $gf->utf8("</div></div></div></div>");
+			}
+				
 				
 
-			}
-			echo $gf->utf8("</div></div></div>");
+		}
+		echo $gf->utf8("</div></div></div>");
 		
 		}elseif($actividad=="resetkey"){
 			if($_SESSION["restprofile"]!="A") exit;
@@ -158,20 +159,7 @@ session_start();
 		}elseif($actividad=="chpass"){
 			$dialogo=$gf->cleanVar($_GET["rnd"]);
 			$id_usuario= $gf->cleanVar($_GET["restuiduser"]);
-
-			echo $gf->utf8("CAMBIAR CLAVE: ".$_SESSION["restuname"]."
-			<div class='control-group'><label for='oldpass'>Clave antigua</label>
-			<input class='form-control unv_newpass' type='password' id='oldpass' name='oldpass' />
-			</div>
-			<div class='control-group'><label for='newpass1'>Nueva clave</label>
-			<input class='form-control unv_newpass' type='password' id='newpass1' name='newpass1' />
-			</div>
-			<div class='control-group'><label for='newpass2'>Confirmar nueva clave</label>
-			<input class='form-control unv_newpass' type='password' id='newpass2' name='newpass2' /></div>
-			
-			<hr /><input type='button' class='btn btn-primary' value='Cambiar Clave' onclick=\"cargaHTMLvars('ModalContent_$dialogo','$sender?flag=chpass2','','20000','unv_newpass')\" /> <input type='button' class='btn btn-warning' value='Cancelar' onclick=\"closeD('$dialogo')\" /></form>");
-
-
+			echo $gf->utf8("<div class='box box-warning'><div class='box-header with-border'><h3 class='box-title'><i class='fa fa-key'></i> Cambiar Clave: ".$_SESSION["restuname"]."</h3></div><div class='box-body'><div class='form-group'><label for='oldpass'><i class='fa fa-lock'></i> Clave Antigua</label><input class='form-control unv_newpass' type='password' id='oldpass' name='oldpass' placeholder='Ingrese su clave actual' /></div><div class='form-group'><label for='newpass1'><i class='fa fa-key'></i> Nueva Clave</label><input class='form-control unv_newpass' type='password' id='newpass1' name='newpass1' placeholder='Ingrese su nueva clave' /></div><div class='form-group'><label for='newpass2'><i class='fa fa-key'></i> Confirmar Nueva Clave</label><input class='form-control unv_newpass' type='password' id='newpass2' name='newpass2' placeholder='Confirme su nueva clave' /></div></div><div class='box-footer'><button type='button' class='btn btn-primary' onclick=\"cargaHTMLvars('ModalContent_$dialogo','$sender?flag=chpass2','','20000','unv_newpass')\"><i class='fa fa-check'></i> Cambiar Clave</button> <button type='button' class='btn btn-default' onclick=\"closeD('$dialogo')\"><i class='fa fa-times'></i> Cancelar</button></div></div>");
 		}else{
 			echo "Ninguna solicitud";
 		}

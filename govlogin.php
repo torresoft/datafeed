@@ -113,6 +113,7 @@ session_start();
 					$_SESSION["restmancomun"]=$mancomun;
 					$_SESSION["restcajerofiscal"]=$cajero_fiscal;
 					$_SESSION["restorigin"]=$usuario_origin;
+					$_SESSION["restfastmode"]=0;
 			
 					
 					$_SESSION["restprofile"]=$perfil;
