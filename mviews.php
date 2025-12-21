@@ -620,6 +620,7 @@ date_default_timezone_set("America/Bogota");
 						if($id_pedido!="" && $tipo!="D"){
 							$op=1;
 							$classd='bg-red';
+						$textcolor='#fff';
 							if($chef!="0000-00-00 00:00:00"){
 								$icon="fa-fire";
 								$classd="bg-orange";
@@ -636,7 +637,8 @@ date_default_timezone_set("America/Bogota");
 						}else{
 							$apertura=0;
 							$op=0;
-							$classd='bg-grey';
+							$classd='bg-gray';
+						$textcolor='#333';
 							$addons="create_pedido&id_mesa=$id_mesa&t=$tipo";
 							if($tipo=="M"){
 								$icon="fa-qrcode";
@@ -664,25 +666,28 @@ date_default_timezone_set("America/Bogota");
 							$dv="";
 						}
 						$progress="
-						<div class='progress'>
-							<div class='progress-bar' id='mesa_progress_$id_mesa' style='width: 100%;'></div>
+						<div class='progress progress-xs' style='margin-bottom:5px;'>
+							<div class='progress-bar progress-bar-warning' id='mesa_progress_$id_mesa' style='width: $perc%;'></div>
 						</div>";
 						
 						echo $gf->utf8("
-						
-						
-						<div class='col-md-4 col-sm-6 col-xs-12 lasmesas grupi_$id_grupo data-filtrable' id='tbl_$id_mesa' t='$tipo' idm='$id_mesa' $onclik timer='$apertura'>
-						  <div class='info-box $classd shadow link-cnv miniround material-ripple' id='infoboxa_$id_mesa'>
-							<span class='info-box-icon' style='font-size:1.1em;'>$elicon</span>
-
-							<div class='info-box-content'>
-							  <span class='info-box-text'>$nombre $moto <small class='pull-right tdr' style='font-size:11px;'>$tender</small></span>
-							  <span class='info-box-number' id='mesa_sillas_$id_mesa'>$chair <small class='pull-right'>$totals</small></span>
-
-							 $progress
-							  <span class='progress-description' id='pg_description_k_$id_mesa'>
-								$avante
-							  </span>
+						<div class='col-lg-3 col-md-4 col-sm-6 col-xs-12 lasmesas grupi_$id_grupo data-filtrable' id='tbl_$id_mesa' t='$tipo' idm='$id_mesa' $onclik timer='$apertura' style='transition: all 0.3s ease;'>
+						  <div class='small-box $classd' id='infoboxa_$id_mesa' style='cursor:pointer; transition: transform 0.2s ease; border-radius:3px; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);'>
+							<div class='inner' style='color:$textcolor !important; padding:8px 10px;'>
+							  <h3 style='margin:0; font-size:24px; color:$textcolor !important;'>$elicon</h3>
+							  <p style='font-size:12px; margin:3px 0 0 0; color:$textcolor !important;'><strong>$nombre</strong> $moto</p>
+							  <div style='margin:5px 0 3px 0; color:$textcolor !important;'>
+								<span id='mesa_sillas_$id_mesa' style='font-size:11px;'>$chair</span>
+								<span class='pull-right' style='font-size:13px; font-weight:bold;'>$totals</span>
+							  </div>
+							  $progress
+							  <div style='font-size:10px; opacity:0.85; color:$textcolor !important; margin-top:2px;'>
+								<i class='fa fa-clock-o'></i> <span id='pg_description_k_$id_mesa'>$avante</span>
+								<span class='pull-right tdr' style='font-size:9px;'><i class='fa fa-user'></i> $tender</span>
+							  </div>
+							</div>
+							<div class='icon'>
+							  <i class='fa $icon' id='mesa_icon_$id_mesa' style='opacity:0.12;'></i>
 							</div>
 						  </div>
 						</div>
@@ -698,12 +703,12 @@ date_default_timezone_set("America/Bogota");
 						echo $gf->utf8("
 						
 						
-						<div class='col-md-4 col-sm-6 col-xs-12 lasmesas grupi_reservas data-filtrable' tid='reservations' id='tbl_reservas' onclick=\"getDialog('$sender?flag=reservations')\">
-						  <div class='info-box bg-aqua shadow link-cnv miniround material-ripple' id='infoboxa_reservas'>
-							<span class='info-box-icon' style='font-size:28px;'><i class='fa fa-lock'></i></span>
+						<div class='col-lg-3 col-md-4 col-sm-6 col-xs-12 lasmesas grupi_reservas data-filtrable' tid='reservations' id='tbl_reservas' onclick=\"getDialog('$sender?flag=reservations')\">
+						  <div class='small-box bg-aqua shadow link-cnv miniround material-ripple' id='infoboxa_reservas'>
+							<span class='' style='font-size:28px;'><i class='fa fa-lock'></i></span>
 
-							<div class='info-box-content'>
-							  <span class='info-box-text'>Reservas  <small class='pull-right' style='font-size:11px;'></small></span>
+							<div class='small-box-content'>
+							  <h3 style='margin:0; font-size:24px; color:$textcolor !important;'>$elicon</h3><p style='font-size:12px; margin:3px 0 0 0; color:$textcolor !important;'><strong>Reservas  <small class='pull-right' style='font-size:11px;'></small></span>
 							  <span class='info-box-number' id='mesa_sillas_reservas'>$nreser</span>
 
 							  <span class='progress-description' id='pg_description_k_reservas'>
@@ -967,6 +972,7 @@ date_default_timezone_set("America/Bogota");
 							$icon="fa-hourglass-2";
 							$op=1;
 							$classd='bg-red';
+						$textcolor='#fff';
 							if($chef!="0000-00-00 00:00:00"){
 								$icon="fa-fire";
 								$classd="bg-orange";
@@ -980,7 +986,8 @@ date_default_timezone_set("America/Bogota");
 						}else{
 							$icon="fa-qrcode";
 							$op=0;
-							$classd='bg-grey';
+							$classd='bg-gray';
+						$textcolor='#333';
 							$chair="Libre";
 						}
 						echo $gf->utf8("$id_mesa|$chair|$id_pedido|$icon|$classd|$perc***");
@@ -1161,14 +1168,14 @@ date_default_timezone_set("America/Bogota");
 							$perdiez=round($perca,-1);
 							$color=$arcols[$perdiez];
 							echo $gf->utf8("
-							<div class='col-md-4'>
+							<div class='col-lg-3 col-md-4'>
 							  <div class='box box-widget widget-user-2 shadow'>
 								<div class='widget-user-header bg-grey'>
 								
 									
 								<div class='row'><div class='col-md-8'><h3 class='widget-user-username'>$nombre</h3>
 								  <h5 class='widget-user-desc'>Pedido No. $id_pedido  ($sillas sillas)</h5>
-								</div><div class='col-md-4'>
+								</div><div class='col-lg-3 col-md-4'>
 								  <input type='text' class='knob pull-right' value='$perca' data-width='70' data-height='70' data-fgColor='$color'>
 								 </div>
 								 </div>
@@ -2375,7 +2382,7 @@ date_default_timezone_set("America/Bogota");
 										<div class='row'><div class='col-md-8'><h3 class='widget-user-username'>$nombre</h3>
 										<h5 class='widget-user-desc'>Pedido No. $id_pedido  ($sillas sillas) <input type='hidden' class='chefcounter_' value=\"$id_pedido\" /></h5>
 										<button class='btn btn-warning btn-sm' style='display:$displbott;' id='dispach_$id_pedido' onclick=\"getDialog('$sender?flag=despachar&id_pedido=$id_pedido&id_mesa=$id_mesa')\">Despachado</button>
-										</div><div class='col-md-4'>
+										</div><div class='col-lg-3 col-md-4'>
 										<input type='text' class='knob pull-right' value='$perca' data-width='70' data-height='70' data-fgColor='$color'>
 										</div>
 										</div>
@@ -2387,7 +2394,7 @@ date_default_timezone_set("America/Bogota");
 										</div>
 									</div>
 									</div>
-									<div class='col-md-4 col-lg-4'>
+									<div class='col-lg-3 col-md-4 col-lg-4'>
 									&nbsp;
 									</div>
 									");
