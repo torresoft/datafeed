@@ -1,0 +1,99 @@
+<div class='row'>
+    <div class='col-xs-6'>
+        <input style='position:fixed;top:60px;left:15px;z-index:600;' type='text' placeholder='Buscar...' id='tr_pedidos_items' onkeyup="filtrarTr('tr_pedidos_items','flt_tr_items');validaBtnErase()" />
+        
+        <button id='erasesearch' onclick="javascript:$('#tr_pedidos_items').val('');filtrarTr('tr_pedidos_items','flt_tr_items');$('#tr_pedidos_items').focus()" class='btn btn-sm btn-warning' style='position:fixed;top:60px;left:180px;display:none;'><i class='fa fa-remove'></i></button>
+	</div>
+	<div class='col-xs-6' id="botonera"></div>
+</div>
+			
+<button id='elbuttonk' style='position:fixed;bottom:60px;left:10px;width:45px;height:45px;font-size:20px;border-radius:25px;z-index:600;' class='btn btn-md btn-warning pull-left shadow'>
+    <i class='fa fa-check'></i>
+</button> 
+					
+<button class='btn btn-danger btn-md pull-right shadow' style='position:fixed;bottom:60px;left:65px;width:45px;height:45px;font-size:20px;border-radius:25px;;z-index:600;' id='elbuttonk2'>
+    <i class='fa fa-remove'></i>
+</button>
+					
+<div class='box-group' id='accordeon_items'>
+    {{#categorias}}
+    <div class='panel box box-default flt_tr_items'>
+        <div class='box-header'>
+			<h4 class='box-title' style='font-size:28px;width:100%;font-weight:bold;'>
+				<a data-toggle='collapse' data-parent='#accordeon_items' id='clikat_{{id_categoria}}' href='#collapse_cat_{{id_categoria}}' class='text-center clickats' style='width:100%;' aria-expanded='$expanded'>
+                    {{nombre_categoria}} 
+                    <i class='fa  fa-caret-square-o-down pull-right'></i>
+                </a>
+			</h4>
+		</div>
+		<div id='collapse_cat_{{id_categoria}}' class='panel-collapse collapse non-transition firstrr' aria-expanded='false'>
+		    <div class='box-body'>
+                <ul class="list-group">
+                    {{#productos}}
+                    <li class="list-group-item clearfix">
+                        <table class="table">
+                            <tr class='flt_tr_items $classe cattie_{{id_categoria}}' style='margin-left:3px;'>
+                                <td>
+                                    <h4>{{nombre_plato}}
+                                        <small class='pull-right'>$ {{precio}}</small>
+                                    </h4>
+                                </td>
+                                <td width='35'>
+                                    <input type='checkbox' class='icheck unival_select_plats' onclick="showak('{{id_plato}}');strolin()" style='width:36px !important;height:36px !important;' value='{{id_plato}}' name='plt_{{id_plato}}' id='plt_{{id_plato}}' />
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    {{#raciones}} 
+                    <li class="list-group-item clearfix">
+                        <table class="table">
+                            <tr style='display:none;' class='lospingos_{{id_plato}}'>
+                                
+                                <td>{{$nm_racion}} 
+                                <select class='form-control input-sm unival_select_plats' name='racci_{{id_rac}}' id='racci_{{id_rac}}'>
+                                    {{#opciones}}
+                                        <option value='{{iop}}'>{{namop}}</option>
+                                    {{/opciones}}
+                                </select>
+                                </td>
+                                <td>
+                                    <input type='checkbox' class='cicheck_{{id_plato}}_{{id_rac}} unival_select_plats' style='width:30px !important;height:30px !important;' value='{{id_rac}}' name='racc_{{id_rac}}' id='racc_{{id_rac}}' checked='checked' />
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    {{/raciones}}
+                    <li class="list-group-item clearfix">
+                        <table class="table">
+                            <tr style='display:none;' class='$classe2 lospingos_{{id_plato}}'>
+                                <td>{{nm_racion}}</td>
+                                <td>
+                                    <input type='checkbox' class='cicheck_{{id_plato}}_{{id_rac}} unival_select_plats' style='width:30px !important;height:30px !important;' value='{{id_rac}}' name='racc_{{id_rac}}' id='racc_{{id_rac}}' checked='checked' />
+                                </td>
+                            </tr>
+                            <tr style='display:none;' class='lospingos_{{id_plato}}'>
+                                <td colspan='2'>
+                                    <textarea class='form-control unival_select_plats' id='observ_{{id_plato}}' placeholder='Observaciones adicionales' name='observ_{{id_plato}}'></textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                    {{/productos}}
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+    {{/categorias}}
+</div>
+<script>
+    function renderHello() {
+        var template = document.getElementById('accordeon_items').innerHTML;
+        var rendered = Mustache.render(template, { categorias: [{id_categoria:1,nombre_categoria:"La verga",
+        productos:[
+                    {id_plato:1,nombre_plato:"sfsadfasd fsdfsdsad fsad",precio:50000,raciones:[]}
+                ]}]});
+        document.getElementById('accordeon_items').innerHTML = rendered;
+    }
+    renderHello();
+</script>
