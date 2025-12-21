@@ -666,14 +666,14 @@ date_default_timezone_set("America/Bogota");
 							$dv="";
 						}
 						$progress="
-						<div class='progress progress-xs' style='margin-bottom:5px;'>
-							<div class='progress-bar progress-bar-warning' id='mesa_progress_$id_mesa' style='width: $perc%;'></div>
+						<div class='progress progress-xs' style='margin-bottom:5px; border-radius:4px; overflow:hidden;'>
+							<div class='progress-bar progress-bar-warning' id='mesa_progress_$id_mesa' style='width: $perc%; transition: width 0.4s ease;'></div>
 						</div>";
 						
 						echo $gf->utf8("
 						<div class='col-lg-3 col-md-4 col-sm-6 col-xs-12 lasmesas grupi_$id_grupo data-filtrable' id='tbl_$id_mesa' t='$tipo' idm='$id_mesa' $onclik timer='$apertura' style='transition: all 0.3s ease;'>
-						  <div class='small-box $classd' id='infoboxa_$id_mesa' style='cursor:pointer; transition: transform 0.2s ease; border-radius:3px; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);'>
-							<div class='inner' style='color:$textcolor !important; padding:8px 10px;'>
+						  <div class='small-box $classd' id='infoboxa_$id_mesa' style='cursor:pointer; transition: all 0.3s ease; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow:hidden;' onmouseover=\"this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)';\" onmouseout=\"this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';\">
+							<div class='inner' style='color:$textcolor !important; padding:10px 12px;'>
 							  <h3 style='margin:0; font-size:24px; color:$textcolor !important;'>$elicon</h3>
 							  <p style='font-size:12px; margin:3px 0 0 0; color:$textcolor !important;'><strong>$nombre</strong> $moto</p>
 							  <div style='margin:5px 0 3px 0; color:$textcolor !important;'>
@@ -687,7 +687,7 @@ date_default_timezone_set("America/Bogota");
 							  </div>
 							</div>
 							<div class='icon'>
-							  <i class='fa $icon' id='mesa_icon_$id_mesa' style='opacity:0.12;'></i>
+							  <i class='fa $icon' id='mesa_icon_$id_mesa' style='opacity:0.18; transition: opacity 0.3s ease;'></i>
 							</div>
 						  </div>
 						</div>
