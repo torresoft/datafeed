@@ -8,7 +8,6 @@ date_default_timezone_set("America/Bogota");
 
 	$serv=$gf->dataSet("SELECT ID_SERVICIO FROM servicio WHERE ESTADO=0");
 	if(count($serv)==0){
-	//if(!isset($_SESSION["restservice"]) || $_SESSION["restservice"]==0){
 		echo $gf->utf8("
 		<div class='alert alert-danger alert-dismissible'>
 		<button type='button' class='close' data-dismiss='alert' aria-hidden='true'>x</button>
@@ -512,38 +511,7 @@ date_default_timezone_set("America/Bogota");
 				}else{
 					echo "Debes seleccionar una mesa destino";
 				}
-			}elseif($flag=="set_distinct"){
-				$id_silla=$gf->cleanVar($_GET["id_silla"]);
-				$rnd=$gf->cleanVar($_GET["rnd"]);
-				$cur= $gf->cleanVar($_GET["cur"]);
-				echo $gf->utf8("<div class='box box-default'><div class='box-header'>Selecciona distintivos para el comensal</div>
-				<div class='box-body'>
-					<div class='row'>
-					<div class='col-md-12 flexbox'>
-					<button class='btn btn-app' onclick=\"cargaHTMLvars('state_proceso','$sender?flag=gender_go&id_silla=$id_silla&val=F')\"><i class='fa fa-female'></i></button>
-					<button class='btn btn-app' onclick=\"cargaHTMLvars('state_proceso','$sender?flag=gender_go&id_silla=$id_silla&val=M')\"><i class='fa fa-male'></i></button>
-					</div>
-					</div>
-					<hr />
-					<div class='row'>
-					<div class='col-md-12'>
-					Color de vestido<br />
-					<input type='color' class='color-input form-control' value='#$cur' onchange=\"setCola(this.value)\" id='color-input' name='color' />
-					</div>
-					</div>
-					
-				</div>
-				<script>
-				function setCola(color){
-					var cola=color.replace(/#/gi,'');
-					cargaHTMLvars('state_proceso','$sender?flag=color_go&id_silla=$id_silla&val='+cola)
-				}
-					
-				</script><br />
-				<button class='btn btn-success center-block' onclick=\"closeD('$rnd')\"><i class='fa fa-check'></i> Listo</button>
-				");
-			
-				
+
 			}elseif($flag=="pago"){
 				if($_SESSION["restprofile"]=="J"){
 					
@@ -592,40 +560,8 @@ date_default_timezone_set("America/Bogota");
 				if($ok){
 					echo $gf->utf8("Impreso...");
 				}
-			}elseif($flag=="color_go"){
-				$id_silla=$gf->cleanVar($_GET["id_silla"]);
-				$val=$gf->cleanVar($_GET["val"]);
-				
-				$ok=$gf->dataIn("UPDATE sillas SET COLOR='#$val' WHERE ID_SILLA='$id_silla'");
-				if($ok){
-					echo $gf->utf8("<script>
-					$(function(){
-						$('#icon_back_$id_silla').css('background-color','#$val !mportant');
-					})
-					</script>");
-				}
-				
-				
-				
-			}elseif($flag=="gender_go"){
-				$id_silla=$gf->cleanVar($_GET["id_silla"]);
-				$val=$gf->cleanVar($_GET["val"]);
-				$ok=$gf->dataIn("UPDATE sillas SET GENDER='$val' WHERE ID_SILLA='$id_silla'");
-				if($val=="M"){
-					$remove="fa-female";
-					$addc="fa-male";
-				}else{
-					$remove="fa-male";
-					$addc="fa-female";
-				}
-				if($ok){
-					echo $gf->utf8("<script>
-					$(function(){
-						$('#icon_gender_$id_silla').addClass('$addc');
-						$('#icon_gender_$id_silla').removeClass('$remove');
-					})
-					</script>");
-				}
+
+			
 			}elseif($flag=="home"){
 				
 
