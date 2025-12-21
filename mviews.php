@@ -40,274 +40,230 @@ date_default_timezone_set("America/Bogota");
 				if(!isset($_SESSION["tlv"])){
 					$_SESSION["tlv"]="P";
 				}
-
-				if($_SESSION["restchairs"] == 1){
-
-					if($_SESSION["tlv"]=="P"){
-						
-						$resultInt = $gf->dataSet("SELECT M.ID_MESA, M.NOMBRE, M.TIPO, P.ID_PEDIDO, P.DIRECCION, P.DENOM, P.DESPACHADO, COUNT(SI.ID_SILLA) AS SILLAS, P.CHEF, P.CAJA, P.PAGADO, P.ID_TENDER FROM mesas AS M JOIN pedidos AS P ON (M.ID_MESA=P.ID_MESA AND P.CIERRE='0000-00-00 00:00:00') LEFT JOIN sillas AS SI ON (P.ID_PEDIDO=SI.ID_PEDIDO) WHERE M.ID_MESA='$id_mesa' AND P.ID_PEDIDO='$id_pedido' GROUP BY M.ID_MESA ORDER BY M.POS");
-						$nprod=0;
-						if(count($resultInt)>0){
-							$rowInt = $resultInt[0];
-							$id_mesa=$rowInt["ID_MESA"];
-							$nombre=$rowInt["NOMBRE"];
-							$chef=$rowInt["CHEF"];
-							$caja=$rowInt["CAJA"];
-							$sillas=$rowInt["SILLAS"];
-							$tipo=$rowInt["TIPO"];
-							$id_pedido=$rowInt["ID_PEDIDO"];
-							$direccion=$rowInt["DIRECCION"];
-							$despachado=$rowInt["DESPACHADO"];
-							$devuelta=$rowInt["DENOM"];
-							$pagado=$rowInt["PAGADO"];
-							$id_tender=$rowInt["ID_TENDER"];
-							if($devuelta==0) $devuelta="";
-							$icon="fa-hourglass-2";
-							$op=1;
-							$classd='bg-red';
-							$estata="";
-							if($tipo!="D"){
-								$chair="$sillas sillas";
-							}else{
-								$chair="Domicilio";
-							}
-							$resultChair = $gf->dataSet("SELECT S.ID_SILLA, S.COLOR, S.GENDER, SUM(SP.CANTIDAD) AS PEDIDOS, SUM(SP.PRINTED) AS IMPRESOS FROM sillas AS S LEFT JOIN sillas_platos AS SP ON(S.ID_SILLA=SP.ID_SILLA) LEFT JOIN platos AS P ON(P.ID_PLATO=SP.ID_PLATO AND P.COCINA=1) WHERE S.ID_PEDIDO='$id_pedido' GROUP BY S.ID_SILLA");
-							$nch=1;
-							$lastchair=0;
-							$lastpedi=1;
-							$chairi="";
-							$peditotal=0;
-							$listostotal=0;
-							$entrega_total=0;
-							$chefed=0;
-							$toprint=0;
-							if(count($resultChair)>0){
-								foreach($resultChair as $rowChair){
-									$id_chair=$rowChair["ID_SILLA"];
-									$cantpedido=$rowChair["PEDIDOS"];
-									$cantimpresos=$rowChair["IMPRESOS"];
-									$color=$rowChair["COLOR"];
-									$gender=$rowChair["GENDER"];
-									if($gender=="M"){
-										$iconito="fa-male";
-									}else{
-										$iconito="fa-female";
-									}
-									if($color==""){
-										$color="#2E64FE";
-										$curcol="2E64FE";
-									}
-
-									if($cantpedido>$cantimpresos){
-										$toprint++;
-									}
-									
-									
-									if($cantpedido>0){
-										$checkchair="<i class='fa fa-cutlery'></i>";
-										$claseconclase="bg-green";
-									}else{
-										$checkchair="";
-										$claseconclase="bg-orange";
-									}
-
-									$percent=100;
-									
-									if($id_chair>0){
-										if($tipo!="D"){
-											$nmsill="SILLA $nch";
-											$oncla="getDialog('$sender?flag=set_distinct&id_silla=$id_chair&cur=$curcol','250')";
-										}else{
-											$nmsill="PRODUCTOS";
-											$oncla='dummy()';
-											$iconito="fa-home";
-										}
-										$chairi.="
-										<div class='col-md-3 col-sm-6 col-xs-12'>
-										<div class='info-box $claseconclase shadow link-cnv miniround material-ripple'>
-											<span onclick=\"$oncla\" class='info-box-icon' id='icon_back_$id_chair' style='background-color:$color !important;'><i id='icon_gender_$id_chair' class='fa $iconito'></i></span>
-
-											<div class='info-box-content' onclick=\"cargaHTMLvars('contenidos-aux','$sender?flag=openchair&id_silla=$id_chair&nch=$nch&t=$tipo')\" lnk-tsf='#silla_$id_chair' lnk-cont='contenidos-aux' id='ch_$id_chair' idch='$id_chair'>
-											<span class='info-box-text'><h3>$nmsill  $checkchair<span class='pull-right'>
-											
-											</span></h3></span>
-											
-										
-											<span class='progress-description'>
-												<span class='badge'><i class='fa fa-cutlery'></i> $pedi</span> <span class='badge'><i class='fa fa-check'></i> $listos</span> 
-												";
-												if($_SESSION["restautogest"]==0){
-													$chairi.="
-													<span class='badge'><i class='fa fa-check-circle-o'></i>$entregados</span>
-													";
-												}
-												$chairi.="
-											</span>
-											</div>
-										</div>
-										</div>
-										";
-										
-										$nch++;
-										$lastchair=$id_chair;
-										$lastpedi=$cantpedido;
-										$nprod+=$cantpedido;
-									}
-								}
-							}
-						}else{
-							echo $gf->utf8("<script>
-							$(function(){
-								refreshadm();
-							});
-							</script>
-							");
-						}
-						
-						if($chef!="0000-00-00 00:00:00" && $toprint==0){
-							$icon="fa-fire";
-							$classd="bg-orange";
-						
-							if($_SESSION["restprofile"]!="M"){
-
-								if($_SESSION["restfastmode"]==1){
-									$cobra_fn="getDialog('Admin/site_box.php?flag=fact_pedido1&id_ped=$id_pedido','1200','Facturar','','','cargaHTMLvars(\'contenidos\',\'mviews.php?flag=home\')','unival_dix_$id_pedido')";
-								}else{
-									$cobra_fn="cargaHTMLvars('contenidos-aux','Admin/site_box.php?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido&callback=ped')";
-								}
-								$btn_cobra="<button class='btn btn-primary margined' lnk-tsf='#cobrar-$id_pedido' lnk-cont='contenidos-aux' onclick=\"$cobra_fn\"><i class='fa fa-dollar'></i> Cobrar</button>";
-								
-								$btn_send="";
-							}else{
-								$btn_cobra="<button  class='btn btn-default pull-left' onclick=\"getDialog('$sender?flag=printpre&id_pedido=$id_pedido','200','Imprimir')\"><i class='fa fa-print'></i> Precuenta</button>";
-							}
-							
-						
-						}else{
-							if($nprod>0){
-								if($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso){
-									if($toprint>0){
-										$btn_send="<button class='btn btn-warning margined' onclick=\"getDialog('$sender?flag=confirm_pedido&id_pedido=$id_pedido&tipo=chef&t=$tipo&id_mesa=$id_mesa')\"><i class='fa fa-fire'></i> Enviar al Chef</button>";
-									}else{
-										$btn_send="";
-									}
-
-								}else{
-									$rsTen=$gf->dataSet("SELECT NOMBRES FROM usuarios WHERE ID_USUARIO='$id_tender' ORDER BY ID_USUARIO");
-									$tender=$rsTen[0]["NOMBRES"];
-									$btn_send="<span class='badge'>Pedido de $tender</span>";
-								}
-								
-							}
-							
-						}
-				
-						if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercancel"]>=$mipermiso)){
-							$btn_cancel="<button class='btn btn-danger margined' onclick=\"getDialog('$sender?flag=cancel_pedido&id_pedido=$id_pedido&id_mesa=$id_mesa','200','Cancelar\ Pedido')\"> <i class='fa fa-trash'></i> Cancelar Pedido</button>";
-						}else{
-							$btn_cancel="";
-						}
-
-						$progress="";
-						
-						echo $gf->utf8("
-						<div class='row'>
-							<div class='col-md-12 flexbox'>
-								<button class='btn btn-default btn-md margined' onclick=\"cargaHTMLvars('contenidos-aux','$sender?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido&tlv=L')\"><i class='fa fa-list'></i></button>
-								
-								<button class='btn btn-default btn-md margined' onclick=\"getDialog('$sender?flag=printcom&id_mesa=$id_mesa&id_pedido=$id_pedido')\"><i class='fa fa-print'></i></button>
-
-								<button class='btn btn-md btn-default margined' onclick=\"getDialog('$sender?flag=rota_pedido&id_pedido=$id_pedido&curmesa=$id_mesa&tipo=$tipo')\"><i class='fa fa-refresh'></i></button>
-								
-								$btn_cancel
-								
-								
-							</div>
-						</div>
-
-						<div class='row flexbox'>
-							<!--<div class='col-md-3 col-sm-6 col-xs-12 lasmesas'  id='tbl_$id_mesa' idm='$id_mesa'>
-							<div class='info-box $classd shadow link-cnv'>
-								<span class='info-box-icon'><i class='fa $icon'></i></span>
-								
-								<div class='info-box-content'>
-								<span class='info-box-text'><h4><b>$nombre</b><span class='pull-right'>$progress</span></h4></span>
-								<span class='info-box-number'>$chair</span>
-								</div>
-								
-							</div>
-							</div>-->
-							<div class='col-md-4 col-sm-6 col-xs-12 lasmesas'  id='tblx_$id_mesa' idm='$id_mesa'>
-							<div class='box box-widget widget-user'>
-								<div class='widget-user-header $classd'>
-								<h3 class='widget-user-username'>$nombre <i id='icon_gender_$id_chair' class='fa $icon pull-right'></i></h3>
-								<h5 class='widget-user-desc'>$chair</h5>
-
-								</div>
-								<div class='widget-user-image'>
-								$progress
-								</div>
-								<div class='box-footer'>
-								");
-								if(1){
-								echo $gf->utf8("
-								<div class='row'>
-									<div class='col-xs-6 border-right flexbox'>
-									");
-									
-									if($pagado==0){
-									echo $gf->utf8("
-									<button class='btn btn-danger margined' onclick=\"cargaHTMLvars('state_proceso','$sender?flag=del_chair&id_mesa=$id_mesa&id_pedido=$id_pedido')\"> <i class='fa fa-minus'></i> Silla</button>
-									");
-									}else{
-										echo $gf->utf8($estata);
-									}
-									echo $gf->utf8("
-									</div>
-									<div class='col-xs-6 border-right flexbox'>
-									");
-									if($pagado==0){
-									echo $gf->utf8("
-									<button class='btn btn-success margined'  onclick=\"cargaHTMLvars('state_proceso','$sender?flag=add_chair&id_mesa=$id_mesa&id_pedido=$id_pedido')\"> <i class='fa fa-plus'></i> Silla</button>
-									");
-									}
-									echo $gf->utf8("
-									</div>
-								</div>
-								");
-								if($tipo=="D"){
-									echo $gf->utf8("<div class='row'><div class='col-md-12'>$direccion</div></div>");
-								}
-								}else{
-									
-								}
-								echo $gf->utf8("
-								</div>
-							</div>
-							</div>
-							
-						</div>
-						<div class='row'>
-						$chairi
+				$rsSilla=$gf->dataSet("SELECT ID_SILLA FROM sillas WHERE ID_PEDIDO='$id_pedido' ORDER BY ID_SILLA");
+				if(count($rsSilla)==0){
+					$id_silla=$gf->dataInLast("INSERT INTO sillas (ID_PEDIDO) VALUES ('$id_pedido')");
+				}else{
+					$id_silla=$rsSilla[0]["ID_SILLA"];
+				}
+				$nch=1;
+				$t=$gf->cleanVar($_GET["t"]);
+				$resultChair = $gf->dataSet("SELECT S.ID_SILLA, S.ID_PEDIDO, S.COLOR, S.GENDER, PE.ID_MESA, PE.ID_TENDER, PE.CHEF, PE.CAJA, PE.DIRECCION, PE.DESPACHADO, PE.PAGADO, PE.DENOM, S.OBSERVACION, P.ID_ITEM, P.ID_PLATO, P.CANTIDAD, P.PRECIO, P.OBSERVACION AS OBSERPLAT, PL.NOMBRE AS PLATO, P.TIPO_PLATO, P.LISTO, P.ENTREGADO, SUM(P.CANTIDAD) AS PEDIDOS, SUM(P.PRINTED) AS IMPRESOS, M.NOMBRE AS MESA, P.PRINTED, M.TIPO, GROUP_CONCAT(CONCAT(C.NOMBRE,'|',R.ESTADO,'|',RO.NOMBRE,'|',ROP.OPTIS) SEPARATOR '+*+') AS COMPOSITION FROM mesas AS M JOIN pedidos AS PE ON PE.ID_MESA=M.ID_MESA LEFT JOIN sillas AS S ON(PE.ID_PEDIDO=S.ID_PEDIDO) LEFT JOIN sillas_platos AS P ON(S.ID_SILLA=P.ID_SILLA) LEFT JOIN platos AS PL ON(P.ID_PLATO=PL.ID_PLATO)LEFT JOIN platos_composicion C ON P.ID_PLATO=C.ID_PLATO LEFT JOIN sillas_platos_composicion R ON R.ID_ITEM=P.ID_ITEM AND R.ID_RACION=C.ID_RACION LEFT JOIN racion_opciones RO ON R.ID_OPCION=RO.ID_OPCION LEFT JOIN (SELECT ID_RACION,GROUP_CONCAT(ID_OPCION) OPTIS FROM racion_opciones GROUP BY ID_RACION ORDER BY ID_RACION)ROP ON ROP.ID_RACION=C.ID_RACION WHERE S.ID_SILLA='$id_silla' GROUP BY P.ID_ITEM ORDER BY P.ID_ITEM");
+				$listos=0;
+				$chefed=0;
+				$nitem=1;
+				$toprint=0;
+				$entregados=0;
+				$entrega_total=0;
+				$peditotal=0;
+				if(count($resultChair)>0){
+					$rowChair=$resultChair[0];
+					$id_chair=$rowChair["ID_SILLA"];
+					$observacion=$rowChair["OBSERVACION"];
+					$id_pedido=$rowChair["ID_PEDIDO"];
+					$gender=$rowChair["GENDER"];
+					$id_mesa=$rowChair["ID_MESA"];
+					$mesa=$rowChair["MESA"];
+					$tipo=$rowChair["TIPO"];
 					
-						</div>
+					
+
+					$cantpedido=$rowChair["PEDIDOS"] || 0;
+					$cantimpreso=$rowChair["IMPRESOS"] || 0;
+
+					$direccion=$rowChair["DIRECCION"];
+					$despachado=$rowChair["DESPACHADO"];
+					$devuelta=$rowChair["DENOM"];
+					$pagado=$rowChair["PAGADO"];
+					$id_tender=$rowChair["ID_TENDER"];
+					if($listos==""){
+						$listos=0;
+					}
+
+					$entrega_total+=$entregados;
+					$peditotal+=$cantpedido;
+					
+					if($cantimpreso<$cantpedido && $cantpedido>0){
+						$toprint++;
+					}
+					$percent=100;
+					$chef=$rowChair["CHEF"];
+					$titca="CANT.";
+
+					echo $gf->utf8("<div id='ch_$id_chair' idch='$id_chair' class='box box-danger'><div class='box-header'> <i class='fa fa-cutlery'></i> <b>PEDIDO $id_pedido - MESA: $mesa</b> 
+					");
+					$active=1;
+					//if($active==1){
+					//if($_SESSION["restuiduser"]==$id_tender || $_SESSION["restprofile"]!="M" || $_SESSION["restmancomun"]>=$mipermiso){
+						echo $gf->utf8("
+						<button style='margin-right:5px;' class='btn btn-sm btn-success pull-right' onclick=\"getDialog('$sender?flag=additemdlg&id_silla=$id_chair&id_mesa=$id_mesa&id_pedido=$id_pedido&nch=$nch&ait=$active&t=$t','500','Adicionar')\"><i class='fa fa-cutlery'></i> Agregar Producto</button>
 						");
-						if($tipo=="D"){
-							$checki0="";
-							$checki1="";
-							$checki2="";
-							switch($pagado){
-								case 0: 
-									$checki0="selected='selected'";
-									break;
-								case 1:
-									$checki1="selected='selected'";
-									break;
-								case 2:
-									$checki2="selected='selected'";
-									break;
+					//}
+					//}
+					echo $gf->utf8("
+					</div>
+					<div class='box-body'>
+					<table class='latabla table table-striped' width='100%'><tr><td></td><td>ITEM</td><td>$titca</td><td>OPC</td></tr>");
+					$nprod=0;
+					$toprint=0;
+					$total_pex=0;
+					foreach($resultChair as $rowChair){
+						$icono="fa-cutlery";
+						$id_item=$rowChair["ID_ITEM"];
+						$cantidad=$rowChair["CANTIDAD"];
+						if($cantidad=="") $cantidad=0;
+						$plato=$rowChair["PLATO"];
+						$listo=$rowChair["LISTO"];
+						$printedd=$rowChair["PRINTED"];
+						$entregado=$rowChair["ENTREGADO"];
+						$composition=$rowChair["COMPOSITION"];
+						$obserplat=$rowChair["OBSERPLAT"];
+						$tipoplato=$rowChair["TIPO_PLATO"];
+						$prux=$rowChair["PRECIO"];
+						if($prux=="") $prux=0;
+
+						$precio = $prux * $cantidad;	
+						$total_pex+=$precio;
+						if($printedd<$cantidad) $toprint++;
+						if($tipoplato==1){
+							$tipoplaicon="<i class='fa fa-spoon orange'></i>";
+						}elseif($tipoplato==2){
+							$tipoplaicon="<i class='fa fa-cutlery red'></i>";
+						}else{
+							$tipoplaicon="";
+						}
+
+						$composet=explode("+*+",$composition);
+						$comps="";
+						foreach($composet as $subcomp){
+							if($subcomp!=""){
+								$subcm=explode("|",$subcomp);
+								$nmcom=$subcm[0];
+								$stcom=$subcm[1];
+								$compost=$subcm[2];
+								$naaa=$subcm[3];
+								$nopts_ar=explode(",",$subcm[3]);
+								$nopts=count($nopts_ar);
+								if($stcom==0){
+									$comps.="Sin $nmcom, ";
+								}else{
+									if($nopts>1){
+										$comps.="$compost, ";
+									}
+								}
+							}
+						}
+						if($obserplat!=""){
+							$comps.=$obserplat.", ";
+						}
+						if($comps==""){
+							
+						}else{
+							$comps=substr($comps,0,-2);
+						}
+						
+						if($id_item!=""){
+							$nprod++;
+							if($chef!="0000-00-00 00:00:00"){
+								$cantii="($cantidad)";
+							}else{
+								$cantii="";
+							}
+							echo $gf->utf8("<tr class='ui-widget-content ui-corner-all' id='tritem_$id_item'><td><b>$nprod</b>$tipoplaicon</td><td><span style='font-size:17px;'> $plato</span><br/><small>$comps</small></td>
+							<td align='center'>");
+							if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercants"]>=$mipermiso || $printedd==0)){
+								echo $gf->utf8("
+								<div class='input-group'>
+									<span class='input-group-addon btn btn-lg btn-danger mimibutton' onclick=\"downNumber('cant_$id_item');calcPrix()\"><i class='fa fa-arrow-down'></i></span>
+									<input type='number' onchange=\"cargaHTMLvars('state_proceso','$sender?flag=edit_cant&item=$id_item&id_pedido=$id_pedido&id_mesa=$id_mesa&t=$tipo&val='+this.value)\" style='font-size:23px;height:40px;text-align:center;min-width:45px;' value='$cantidad' id='cant_$id_item' class='form-control univalunichair cantitis'  it='$id_item' pr='$prux' id='nchairs' name='nchairs'  min='1' max='20' />
+									<span class='input-group-addon btn-lg btn btn-success mimibutton' onclick=\"upNumber('cant_$id_item');calcPrix()\"><i class='fa fa-arrow-up'></i></span>
+								</div>
+								");
+							}else{
+								echo $gf->utf8($cantidad);
 							}
 							echo $gf->utf8("
+							</td><td>");
+							if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercants"]>=$mipermiso || $printedd==0)){
+								echo $gf->utf8("
+								<button class='btn btn-warning' onclick=\"getDialog('$sender?flag=config_plat&id_item=$id_item','600','Editar','','','reloaHash()')\"><i class='fa fa-edit'></i></button>
+								");
+							}else{
+								echo $gf->utf8("
+								<button class='btn btn-default disabled'><i class='fa fa-edit'></i></button>
+								");
+							}
+							if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercants"]>=$mipermiso || $printedd==0)){
+								echo $gf->utf8("<button class='btn btn-danger' onclick=\"getDialog('$sender?flag=del_itemped&id_item=$id_item&id_pedido=$id_pedido&id_mesa=$id_mesa&t=$tipo&printed=$printedd','300','Borrar')\"><i class='fa fa-trash'></i></button>");
+							}else{
+								echo $gf->utf8("<button class='btn btn-default disabled'><i class='fa fa-trash'></i></button>");
+								
+							}
+
+
+							echo $gf->utf8(" <small id='pricex_$id_item'>".@number_format($precio,0)."</small>
+							</td></tr>");
+						}
+					}
+					echo $gf->utf8("<tr><td colspan='4' align='center'>Observaciones: <textarea onchange=\"cargaHTMLvars('state_proceso','$sender?flag=up_observa&id_silla=$id_chair','','5000','unival_observa')\" name='obs_$id_chair' class='form-control unival_observa'>$observacion </textarea><br />
+					<big><b>TOTAL PEDIDO: </b><b id='totl_ped_calc'>".@number_format($total_pex,0)."</b></big><br />
+					");
+					
+					if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercancel"]>=$mipermiso)){
+						$btn_cancel="<button class='btn btn-danger margined' onclick=\"getDialog('$sender?flag=cancel_pedido&id_pedido=$id_pedido&id_mesa=$id_mesa','200','Cancelar\ Pedido')\"> <i class='fa fa-trash'></i> Cancelar Pedido</button>";
+					}else{
+						$btn_cancel="";
+					}
+					$btn_cobra="";
+					$btn_send="";
+					if($chef!="0000-00-00 00:00:00" && $toprint==0){
+						$icon="fa-fire";
+						$classd="bg-orange";
+						if($_SESSION["restprofile"]!="M"){
+
+							if($_SESSION["restfastmode"]==1){
+								$cobra_fn="getDialog('Admin/site_box.php?flag=fact_pedido1&id_ped=$id_pedido','1200','Facturar','','','cargaHTMLvars(\'contenidos\',\'mviews.php?flag=home\')','unival_dix_$id_pedido')";
+							}else{
+								$cobra_fn="cargaHTMLvars('contenidos-aux','Admin/site_box.php?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido&callback=ped')";
+							}
+							$btn_cobra="<button class='btn btn-primary margined' lnk-tsf='#cobrar-$id_pedido' lnk-cont='contenidos-aux' onclick=\"$cobra_fn\"><i class='fa fa-dollar'></i> Cobrar</button>";
+							
+						}
+						$btn_send="<button id='chefin_$id_pedido' class='btn btn-warning margined hidden' onclick=\"getDialog('$sender?flag=confirm_pedido&id_pedido=$id_pedido&tipo=chef&t=$tipo&id_mesa=$id_mesa')\"><i class='fa fa-fire'></i> Enviar al Chef</button>";
+					}else{
+						if($nprod>0){
+							if($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso){
+								if($toprint>0){
+									$btn_send="<button id='chefin_$id_pedido' class='btn btn-warning margined' onclick=\"getDialog('$sender?flag=confirm_pedido&id_pedido=$id_pedido&tipo=chef&t=$tipo&id_mesa=$id_mesa')\"><i class='fa fa-fire'></i> Enviar al Chef</button>";
+								}else{
+									$btn_send="<button id='chefin_$id_pedido' class='btn btn-warning margined hidden' onclick=\"getDialog('$sender?flag=confirm_pedido&id_pedido=$id_pedido&tipo=chef&t=$tipo&id_mesa=$id_mesa')\"><i class='fa fa-fire'></i> Enviar al Chef</button>";
+								}
+							}else{
+								$rsTen=$gf->dataSet("SELECT NOMBRES FROM usuarios WHERE ID_USUARIO='$id_tender' ORDER BY ID_USUARIO");
+								$tender=$rsTen[0]["NOMBRES"];
+								$btn_send="<span class='badge'>Pedido de $tender</span>";
+							}
+							
+						}
+						
+					}
+
+					if($tipo=="D"){
+						$checki0="";
+						$checki1="";
+						$checki2="";
+						switch($pagado){
+							case 0: 
+								$checki0="selected='selected'";
+								break;
+							case 1:
+								$checki1="selected='selected'";
+								break;
+							case 2:
+								$checki2="selected='selected'";
+								break;
+						}
+						echo $gf->utf8("
 						<div class='row'>
 							<div class='col-md-12'>
 								<div class='control-group'>
@@ -323,7 +279,7 @@ date_default_timezone_set("America/Bogota");
 								<div class='control-group'>
 									<label for='devuelta'>PG</label>
 									<select  style='font-size:30px;height:60px;text-align:center;' class='form-control univalpaga' id='paga_$id_pedido' name='paga_$id_pedido' onchange=\"cargaHTMLvars('state_proceso','$sender?flag=up_paga&id_ped=$id_pedido','','5000','univalpaga')\">
-										<option value='0' $ckecki0>DEBE</option>
+										<option value='0' $checki0>DEBE</option>
 										<option value='1' $checki1>PAG&Oacute;</option>
 										<option value='2' $checki2>ABON&Oacute;</option>
 									</select>
@@ -332,457 +288,54 @@ date_default_timezone_set("America/Bogota");
 							</div>
 						</div>
 						");
-						}
-
-
-						if($_SESSION["restprofile"]=="M"){
-							$home="#home";
-						}else{
-							$home="#ver_pedidos_in";
-						}
-
-						echo $gf->utf8("
-						<input type='hidden' id='hometablek' value='$id_mesa' id_ped='$id_pedido' />
-						$btn_send
-						$btn_cobra
-						<button class='btn btn-danger btn-md margined pull-right' id='opentable_backbt' onclick=\"loadHash('$home')\"><i class='fa fa-check'></i> Salir</button>
-						");
-					}else{
-						$resultInt = $gf->dataSet("SELECT M.ID_MESA, M.TIPO, M.NOMBRE, M.COLOR, P.ID_PEDIDO, COUNT(S.ID_SILLA) AS SILLAS FROM mesas AS M JOIN pedidos AS P ON M.ID_MESA=P.ID_MESA LEFT JOIN sillas S ON S.ID_PEDIDO=P.ID_PEDIDO WHERE M.ID_SITIO='".$_SESSION["restbus"]."' AND P.ID_PEDIDO='$id_pedido' GROUP BY P.ID_PEDIDO ORDER BY P.ID_PEDIDO");
-						$nped=0;
-						echo $gf->utf8("<div class='row'>");
-						if(count($resultInt)>0){
-							foreach($resultInt as $rowInt){
-								$id_mesa=$rowInt["ID_MESA"];
-								$nombre=$rowInt["NOMBRE"];
-								$id_pedido=$rowInt["ID_PEDIDO"];
-								$sillas=$rowInt["SILLAS"];
-								$tipo=$rowInt["TIPO"];
-								
-
-								$nsi=0;
-								$inisill=0;
-								if($id_pedido>0){
-									$nped++;
-									$resultChairs = $gf->dataSet("SELECT SP.ID_ITEM, S.ID_SILLA, S.OBSERVACION, SP.CANTIDAD, SP.OBSERVACION AS OBSERPLAT, SP.LISTO, SP.ENTREGADO, P.NOMBRE, P.DESCRIPCION, GROUP_CONCAT(CONCAT(C.NOMBRE,'|',R.ESTADO,'|',RO.NOMBRE,'|',ROP.OPTIS) SEPARATOR '+*+') AS COMPOSITION FROM sillas AS S JOIN sillas_platos AS SP ON (S.ID_SILLA=SP.ID_SILLA) JOIN platos AS P ON (SP.ID_PLATO=P.ID_PLATO) LEFT JOIN platos_composicion C ON SP.ID_PLATO=C.ID_PLATO LEFT JOIN sillas_platos_composicion R ON R.ID_ITEM=SP.ID_ITEM AND R.ID_RACION=C.ID_RACION LEFT JOIN racion_opciones RO ON R.ID_OPCION=RO.ID_OPCION LEFT JOIN (SELECT ID_RACION,GROUP_CONCAT(ID_OPCION) OPTIS FROM racion_opciones GROUP BY ID_RACION ORDER BY ID_RACION)ROP ON ROP.ID_RACION=C.ID_RACION WHERE S.ID_PEDIDO='$id_pedido' GROUP BY SP.ID_ITEM ORDER BY S.ID_SILLA");
-									$plats="";
-									$totpedido=0;
-									$totlisto=0;
-									if(count($resultChairs)>0){
-										foreach($resultChairs as $rwChair){
-											
-											$id_item=$rwChair["ID_ITEM"];
-											$id_silla=$rwChair["ID_SILLA"];
-											$observacion=$rwChair["OBSERVACION"];
-											$entregado=$rwChair["ENTREGADO"];
-											$cantidad=$rwChair["CANTIDAD"];
-											$nombre_plato=$rwChair["NOMBRE"];
-											$descripcion=$rwChair["DESCRIPCION"];
-											$obserplat=$rwChair["OBSERPLAT"];
-											$composition=$rwChair["COMPOSITION"];
-											$composet=explode("+*+",$composition);
-											$comps="";
-											foreach($composet as $subcomp){
-												if($subcomp!=""){
-													$subcm=explode("|",$subcomp);
-													$nmcom=$subcm[0];
-													$stcom=$subcm[1];
-													$compost=$subcm[2];
-													$naaa=$subcm[3];
-													$nopts_ar=explode(",",$subcm[3]);
-													$nopts=count($nopts_ar);
-													if($stcom==0){
-														$comps.="Sin $nmcom, ";
-													}else{
-														if($nopts>1){
-															$comps.="$compost, ";
-														}
-													}
-												}
-											}
-											if($obserplat!=""){
-												$comps.=$obserplat." ";
-											}
-											if($comps=="") $comps="Completo";
-											$listo=$rwChair["LISTO"];
-											if($inisill!=$id_silla){
-												$nsi++;
-												$plats.="<li class='list-group-item list-group-item-danger'>SILLA $nsi</li>";
-											}
-											if($observacion!=""){
-												$observacion="<i class='fa fa-user'></i>".$observacion;
-											}
-											$plats.="
-											<li class='list-group-item clearfix'>$nombre_plato";
-											$totpedido++;
-											if($listo==1){
-												$chacka="checked='checked'";
-												$totlisto++;
-											}else{
-												$chacka="";
-											}
-											
-											$plats.="<i class='fa fa-cutlery pull-right'></i>";
-											
-											if($comps!="Completo"){
-												$comps=substr($comps,0,-1);
-											}
-											$plats.="<span class='pull-left badge bg-blue'>$cantidad</span> <small><b>$comps</b><br />$observacion</small> </li>";
-											$inisill=$id_silla;
-										}
-									}
-									if($totpedido>0){
-										$perca=ceil(($totlisto/$totpedido)*100);
-									}else{
-										$perca=0;
-									}
-									$perdiez=round($perca,-1);
-									$color=$arcols[$perdiez];
-									echo $gf->utf8("
-									<div class='col-md-4'>
-									<div class='box box-widget widget-user-2 shadow'>
-										<div class='widget-user-header bg-grey'>
-										
-											
-										<div class='row'><div class='col-md-8'><h3 class='widget-user-username'>$nombre 
-										<button class='btn btn-default btn-md margined' onclick=\"cargaHTMLvars('contenidos-aux','$sender?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido&tlv=P')\"><i class='fa fa-mail-reply-all'></i></button>
-										</h3>
-										<h5 class='widget-user-desc'>Pedido No. $id_pedido  ($sillas sillas)</h5>
-										</div><div class='col-md-4'>
-										
-										</div>
-										</div>
-										</div>
-										<div class='box-footer no-padding'>
-											<ul class='list-group'>
-												$plats
-											</ul>
-										</div>
-									</div>
-									</div>");
-								}
-							}
-						}
-						echo $gf->utf8("</div>
-						<input type='hidden' id='hometablek' value='$id_mesa' id_ped='$id_pedido' />
-						");
-						
 					}
-				}else{
+
 					
-					$id_pedido=$gf->cleanVar($_GET["id_pedido"]);
-					$rsSilla=$gf->dataSet("SELECT ID_SILLA FROM sillas WHERE ID_PEDIDO='$id_pedido' ORDER BY ID_SILLA");
-					if(count($rsSilla)==0){
-						$id_silla=$gf->dataInLast("INSERT INTO sillas (ID_PEDIDO) VALUES ('$id_pedido')");
-					}else{
-						$id_silla=$rsSilla[0]["ID_SILLA"];
-					}
+					echo $gf->utf8("
 					
-					$nch=1;
-					$t=$gf->cleanVar($_GET["t"]);
+					$btn_send $btn_cobra $btn_cancel
+					<button class='btn btn-sm pull-left btn-warning margined' onclick=\"javascript:history.back()\"><i class='fa fa-arrow-left'></i></button>
+					
+					<button class='btn btn-sm pull-left btn-default margined' onclick=\"getDialog('$sender?flag=rota_pedido&id_pedido=$id_pedido&curmesa=$id_mesa&tipo=$t')\"><i class='fa fa-refresh'></i></button>
 
-				
+					<button class='btn btn-sm pull-left btn-default margined' onclick=\"getDialog('$sender?flag=merge_pedido&id_pedido=$id_pedido&curmesa=$id_mesa&tipo=$t')\"><i class='fa fa-compress'></i></button>
+					<button class='btn btn-default btn-sm margined pull-left' onclick=\"getDialog('$sender?flag=printcom&id_mesa=$id_mesa&id_pedido=$id_pedido')\"><i class='fa fa-print'></i></button>
+					
 
-					$resultChair = $gf->dataSet("SELECT S.ID_SILLA, S.ID_PEDIDO, S.COLOR, S.GENDER, PE.ID_MESA, PE.ID_TENDER, PE.CHEF, PE.CAJA, PE.DIRECCION, PE.DESPACHADO, PE.PAGADO, PE.DENOM, S.OBSERVACION, P.ID_ITEM, P.ID_PLATO, P.CANTIDAD, P.PRECIO, P.OBSERVACION AS OBSERPLAT, PL.NOMBRE AS PLATO, P.TIPO_PLATO, P.LISTO, P.ENTREGADO, SUM(P.CANTIDAD) AS PEDIDOS, SUM(P.PRINTED) AS IMPRESOS, M.NOMBRE AS MESA, P.PRINTED, M.TIPO, GROUP_CONCAT(CONCAT(C.NOMBRE,'|',R.ESTADO,'|',RO.NOMBRE,'|',ROP.OPTIS) SEPARATOR '+*+') AS COMPOSITION FROM mesas AS M JOIN pedidos AS PE ON PE.ID_MESA=M.ID_MESA LEFT JOIN sillas AS S ON(PE.ID_PEDIDO=S.ID_PEDIDO) LEFT JOIN sillas_platos AS P ON(S.ID_SILLA=P.ID_SILLA) LEFT JOIN platos AS PL ON(P.ID_PLATO=PL.ID_PLATO)LEFT JOIN platos_composicion C ON P.ID_PLATO=C.ID_PLATO LEFT JOIN sillas_platos_composicion R ON R.ID_ITEM=P.ID_ITEM AND R.ID_RACION=C.ID_RACION LEFT JOIN racion_opciones RO ON R.ID_OPCION=RO.ID_OPCION LEFT JOIN (SELECT ID_RACION,GROUP_CONCAT(ID_OPCION) OPTIS FROM racion_opciones GROUP BY ID_RACION ORDER BY ID_RACION)ROP ON ROP.ID_RACION=C.ID_RACION WHERE S.ID_SILLA='$id_silla' GROUP BY P.ID_ITEM ORDER BY P.ID_ITEM");
-					$listos=0;
-					$chefed=0;
-					$nitem=1;
-					$toprint=0;
-					$entregados=0;
-					$entrega_total=0;
-					$peditotal=0;
-					if(count($resultChair)>0){
-						$rowChair=$resultChair[0];
-						$id_chair=$rowChair["ID_SILLA"];
-						$observacion=$rowChair["OBSERVACION"];
-						$id_pedido=$rowChair["ID_PEDIDO"];
-						$gender=$rowChair["GENDER"];
-						$id_mesa=$rowChair["ID_MESA"];
-						$mesa=$rowChair["MESA"];
-						$tipo=$rowChair["TIPO"];
+					</td></tr></table>
+					
+					</div>
+					
+					<script>
+						$(function(){
+							$(window).scroll(strolin);
+							strolinch()
+						})
 						
-						
-
-						$cantpedido=$rowChair["PEDIDOS"] || 0;
-						$cantimpreso=$rowChair["IMPRESOS"] || 0;
-
-						$direccion=$rowChair["DIRECCION"];
-						$despachado=$rowChair["DESPACHADO"];
-						$devuelta=$rowChair["DENOM"];
-						$pagado=$rowChair["PAGADO"];
-						$id_tender=$rowChair["ID_TENDER"];
-						if($listos==""){
-							$listos=0;
+						function strolinch(){
+							var a=$(window).scrollTop();
+							var h=$(window).height();
+							$('#elbuttonkr').css('top',(Math.round(a)+h-70)+'px');
 						}
 
-						$entrega_total+=$entregados;
-						$peditotal+=$cantpedido;
-						
-						if($cantimpreso<$cantpedido && $cantpedido>0){
-							$toprint++;
+						function calcPrix(){
+							var total=0;
+							$('.cantitis').each(function(){
+								var item=$(this).attr('it');
+								var precio=parseInt($(this).attr('pr'));
+								var cant=parseInt($('#cant_'+item).val());
+								total+=parseInt(precio*cant);
+							});
+							setTimeout(function(){
+								$('#totl_ped_calc').text(total);
+							},500);
 						}
-						$percent=100;
-						$chef=$rowChair["CHEF"];
-						$titca="CANT.";
-
-						echo $gf->utf8("<div id='ch_$id_chair' idch='$id_chair' class='box box-danger'><div class='box-header'> <i class='fa fa-cutlery'></i> <b>PEDIDO $id_pedido - MESA: $mesa</b> 
-						");
-						$active=1;
-						//if($active==1){
-						//if($_SESSION["restuiduser"]==$id_tender || $_SESSION["restprofile"]!="M" || $_SESSION["restmancomun"]>=$mipermiso){
-							echo $gf->utf8("
-							<button style='margin-right:5px;' class='btn btn-sm btn-success pull-right' onclick=\"getDialog('$sender?flag=additemdlg&id_silla=$id_chair&id_mesa=$id_mesa&id_pedido=$id_pedido&nch=$nch&ait=$active&t=$t','500','Adicionar')\"><i class='fa fa-cutlery'></i> Agregar Producto</button>
-							");
-						//}
-						//}
-						echo $gf->utf8("
-						</div>
-						<div class='box-body'>
-						<table class='latabla table table-striped' width='100%'><tr><td></td><td>ITEM</td><td>$titca</td><td>OPC</td></tr>");
-						$nprod=0;
-						$toprint=0;
-						$total_pex=0;
-						foreach($resultChair as $rowChair){
-							$icono="fa-cutlery";
-							$id_item=$rowChair["ID_ITEM"];
-							$cantidad=$rowChair["CANTIDAD"];
-							if($cantidad=="") $cantidad=0;
-							$plato=$rowChair["PLATO"];
-							$listo=$rowChair["LISTO"];
-							$printedd=$rowChair["PRINTED"];
-							$entregado=$rowChair["ENTREGADO"];
-							$composition=$rowChair["COMPOSITION"];
-							$obserplat=$rowChair["OBSERPLAT"];
-							$tipoplato=$rowChair["TIPO_PLATO"];
-							$prux=$rowChair["PRECIO"];
-							if($prux=="") $prux=0;
-
-							$precio = $prux * $cantidad;	
-							$total_pex+=$precio;
-							if($printedd<$cantidad) $toprint++;
-							if($tipoplato==1){
-								$tipoplaicon="<i class='fa fa-spoon orange'></i>";
-							}elseif($tipoplato==2){
-								$tipoplaicon="<i class='fa fa-cutlery red'></i>";
-							}else{
-								$tipoplaicon="";
-							}
-
-							$composet=explode("+*+",$composition);
-							$comps="";
-							foreach($composet as $subcomp){
-								if($subcomp!=""){
-									$subcm=explode("|",$subcomp);
-									$nmcom=$subcm[0];
-									$stcom=$subcm[1];
-									$compost=$subcm[2];
-									$naaa=$subcm[3];
-									$nopts_ar=explode(",",$subcm[3]);
-									$nopts=count($nopts_ar);
-									if($stcom==0){
-										$comps.="Sin $nmcom, ";
-									}else{
-										if($nopts>1){
-											$comps.="$compost, ";
-										}
-									}
-								}
-							}
-							if($obserplat!=""){
-								$comps.=$obserplat.", ";
-							}
-							if($comps==""){
-								
-							}else{
-								$comps=substr($comps,0,-2);
-							}
-							
-							if($id_item!=""){
-								$nprod++;
-								if($chef!="0000-00-00 00:00:00"){
-									$cantii="($cantidad)";
-								}else{
-									$cantii="";
-								}
-								echo $gf->utf8("<tr class='ui-widget-content ui-corner-all' id='tritem_$id_item'><td><b>$nprod</b>$tipoplaicon</td><td><span style='font-size:17px;'> $plato</span><br/><small>$comps</small></td>
-								<td align='center'>");
-								if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercants"]>=$mipermiso || $printedd==0)){
-									echo $gf->utf8("
-									<div class='input-group'>
-										<span class='input-group-addon btn btn-lg btn-danger mimibutton' onclick=\"downNumber('cant_$id_item');calcPrix()\"><i class='fa fa-arrow-down'></i></span>
-										<input type='number' onchange=\"cargaHTMLvars('state_proceso','$sender?flag=edit_cant&item=$id_item&id_pedido=$id_pedido&id_mesa=$id_mesa&t=$tipo&val='+this.value)\" style='font-size:23px;height:40px;text-align:center;min-width:45px;' value='$cantidad' id='cant_$id_item' class='form-control univalunichair cantitis'  it='$id_item' pr='$prux' id='nchairs' name='nchairs'  min='1' max='20' />
-										<span class='input-group-addon btn-lg btn btn-success mimibutton' onclick=\"upNumber('cant_$id_item');calcPrix()\"><i class='fa fa-arrow-up'></i></span>
-									</div>
-									");
-								}else{
-									echo $gf->utf8($cantidad);
-								}
-								echo $gf->utf8("
-								</td><td>");
-								if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercants"]>=$mipermiso || $printedd==0)){
-									echo $gf->utf8("
-									<button class='btn btn-warning' onclick=\"getDialog('$sender?flag=config_plat&id_item=$id_item','600','Editar','','','reloaHash()')\"><i class='fa fa-edit'></i></button>
-									");
-								}else{
-									echo $gf->utf8("
-									<button class='btn btn-default disabled'><i class='fa fa-edit'></i></button>
-									");
-								}
-								if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercants"]>=$mipermiso || $printedd==0)){
-									echo $gf->utf8("<button class='btn btn-danger' onclick=\"getDialog('$sender?flag=del_itemped&id_item=$id_item&id_pedido=$id_pedido&id_mesa=$id_mesa&t=$tipo&printed=$printedd','300','Borrar')\"><i class='fa fa-trash'></i></button>");
-								}else{
-									echo $gf->utf8("<button class='btn btn-default disabled'><i class='fa fa-trash'></i></button>");
-									
-								}
-
-
-								echo $gf->utf8(" <small id='pricex_$id_item'>".@number_format($precio,0)."</small>
-								</td></tr>");
-							}
-						}
-						echo $gf->utf8("<tr><td colspan='4' align='center'>Observaciones: <textarea onchange=\"cargaHTMLvars('state_proceso','$sender?flag=up_observa&id_silla=$id_chair','','5000','unival_observa')\" name='obs_$id_chair' class='form-control unival_observa'>$observacion </textarea><br />
-						<big><b>TOTAL PEDIDO: </b><b id='totl_ped_calc'>".@number_format($total_pex,0)."</b></big><br />
-						");
-						
-						if(($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso) && ($_SESSION["resttendercancel"]>=$mipermiso)){
-							$btn_cancel="<button class='btn btn-danger margined' onclick=\"getDialog('$sender?flag=cancel_pedido&id_pedido=$id_pedido&id_mesa=$id_mesa','200','Cancelar\ Pedido')\"> <i class='fa fa-trash'></i> Cancelar Pedido</button>";
-						}else{
-							$btn_cancel="";
-						}
-						$btn_cobra="";
-						$btn_send="";
-						if($chef!="0000-00-00 00:00:00" && $toprint==0){
-							$icon="fa-fire";
-							$classd="bg-orange";
-							if($_SESSION["restprofile"]!="M"){
-
-								if($_SESSION["restfastmode"]==1){
-									$cobra_fn="getDialog('Admin/site_box.php?flag=fact_pedido1&id_ped=$id_pedido','1200','Facturar','','','cargaHTMLvars(\'contenidos\',\'mviews.php?flag=home\')','unival_dix_$id_pedido')";
-								}else{
-									$cobra_fn="cargaHTMLvars('contenidos-aux','Admin/site_box.php?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido&callback=ped')";
-								}
-								$btn_cobra="<button class='btn btn-primary margined' lnk-tsf='#cobrar-$id_pedido' lnk-cont='contenidos-aux' onclick=\"$cobra_fn\"><i class='fa fa-dollar'></i> Cobrar</button>";
-								
-							}
-							$btn_send="<button id='chefin_$id_pedido' class='btn btn-warning margined hidden' onclick=\"getDialog('$sender?flag=confirm_pedido&id_pedido=$id_pedido&tipo=chef&t=$tipo&id_mesa=$id_mesa')\"><i class='fa fa-fire'></i> Enviar al Chef</button>";
-						}else{
-							if($nprod>0){
-								if($_SESSION["restuiduser"]==$id_tender || $_SESSION["restmancomun"]>=$mipermiso){
-									if($toprint>0){
-										$btn_send="<button id='chefin_$id_pedido' class='btn btn-warning margined' onclick=\"getDialog('$sender?flag=confirm_pedido&id_pedido=$id_pedido&tipo=chef&t=$tipo&id_mesa=$id_mesa')\"><i class='fa fa-fire'></i> Enviar al Chef</button>";
-									}else{
-										$btn_send="<button id='chefin_$id_pedido' class='btn btn-warning margined hidden' onclick=\"getDialog('$sender?flag=confirm_pedido&id_pedido=$id_pedido&tipo=chef&t=$tipo&id_mesa=$id_mesa')\"><i class='fa fa-fire'></i> Enviar al Chef</button>";
-									}
-								}else{
-									$rsTen=$gf->dataSet("SELECT NOMBRES FROM usuarios WHERE ID_USUARIO='$id_tender' ORDER BY ID_USUARIO");
-									$tender=$rsTen[0]["NOMBRES"];
-									$btn_send="<span class='badge'>Pedido de $tender</span>";
-								}
-								
-							}
-							
-						}
-						/*else{
-							if($peditotal==$entrega_total){
-								if($chef=="0000-00-00 00:00:00" && $chefed==0){
-									$gf->dataIn("UPDATE pedidos SET CHEF=NOW() WHERE ID_PEDIDO='$id_pedido'");
-									if($_SESSION["restprofile"]!="M"){
-										$btn_cobra="<button class='btn btn-default margined' onclick=\"cargaHTMLvars('contenidos','Admin/site_box.php?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido')\"><i class='fa fa-dollar'></i> Cobrar</button>";
-									}
-									$btn_send="";
-								}
-								
-							}
-						}*/
-
-						if($tipo=="D"){
-							$checki0="";
-							$checki1="";
-							$checki2="";
-							switch($pagado){
-								case 0: 
-									$checki0="selected='selected'";
-									break;
-								case 1:
-									$checki1="selected='selected'";
-									break;
-								case 2:
-									$checki2="selected='selected'";
-									break;
-							}
-							echo $gf->utf8("
-							<div class='row'>
-								<div class='col-md-12'>
-									<div class='control-group'>
-										<label for='nchairs'>DIRECCI&Oacute;N</label>
-										<textarea class='form-control unival_observa' onchange=\"cargaHTMLvars('state_proceso','$sender?flag=up_direc&id_ped=$id_pedido','','5000','unival_observa')\" id='direc_$id_pedido' name='direc_$id_pedido'>$direccion</textarea>
-										
-									</div>
-									<div class='control-group'>
-										<label for='devuelta'>DV</label>
-										<input type='number' style='font-size:30px;height:60px;text-align:center;' class='form-control univalunichair' id='devuelta_$id_pedido' name='devuelta_$id_pedido'  min='0' max='1000000' value='$devuelta' onchange=\"cargaHTMLvars('state_proceso','$sender?flag=up_devuelta&id_ped=$id_pedido','','5000','univalunichair')\" />
-									</div>
-									
-									<div class='control-group'>
-										<label for='devuelta'>PG</label>
-										<select  style='font-size:30px;height:60px;text-align:center;' class='form-control univalpaga' id='paga_$id_pedido' name='paga_$id_pedido' onchange=\"cargaHTMLvars('state_proceso','$sender?flag=up_paga&id_ped=$id_pedido','','5000','univalpaga')\">
-											<option value='0' $checki0>DEBE</option>
-											<option value='1' $checki1>PAG&Oacute;</option>
-											<option value='2' $checki2>ABON&Oacute;</option>
-										</select>
-									</div>
-									
-								</div>
-							</div>
-							");
-						}
-
-						
-						echo $gf->utf8("
-						
-						$btn_send $btn_cobra $btn_cancel
-						<button class='btn btn-sm pull-left btn-warning margined' onclick=\"javascript:history.back()\"><i class='fa fa-arrow-left'></i></button>
-						
-						<button class='btn btn-sm pull-left btn-default margined' onclick=\"getDialog('$sender?flag=rota_pedido&id_pedido=$id_pedido&curmesa=$id_mesa&tipo=$t')\"><i class='fa fa-refresh'></i></button>
-
-						<button class='btn btn-sm pull-left btn-default margined' onclick=\"getDialog('$sender?flag=merge_pedido&id_pedido=$id_pedido&curmesa=$id_mesa&tipo=$t')\"><i class='fa fa-compress'></i></button>
-						<button class='btn btn-default btn-sm margined pull-left' onclick=\"getDialog('$sender?flag=printcom&id_mesa=$id_mesa&id_pedido=$id_pedido')\"><i class='fa fa-print'></i></button>
-						
-
-						</td></tr></table>
-						
-						</div>
-						
-						<script>
-							$(function(){
-								$(window).scroll(strolin);
-								strolinch()
-							})
-							
-							function strolinch(){
-								var a=$(window).scrollTop();
-								var h=$(window).height();
-								$('#elbuttonkr').css('top',(Math.round(a)+h-70)+'px');
-							}
-
-							function calcPrix(){
-								var total=0;
-								$('.cantitis').each(function(){
-									var item=$(this).attr('it');
-									var precio=parseInt($(this).attr('pr'));
-									var cant=parseInt($('#cant_'+item).val());
-									total+=parseInt(precio*cant);
-								});
-								setTimeout(function(){
-									$('#totl_ped_calc').text(total);
-								},500);
-							}
-						</script>
-						</div>
-						");
-					}
-				
+					</script>
+					</div>
+					");
 				}
+				
+				
 	
 			}elseif($flag=="observitem_go"){
 				$id_item=$gf->cleanVar($_GET["id_item"]);
