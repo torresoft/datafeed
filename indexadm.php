@@ -241,7 +241,7 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
   <!-- Ionicons -->
   <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
   <!-- Theme style -->
-  <link rel="icon" href="favicon.ico">
+  <link rel="icon" href="favicon.png" type="image/png">
   
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
   <!-- AdminLTE Skins. Choose a skin from the css/skins
@@ -279,10 +279,7 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
   <header class="main-header">
     <!-- Logo -->
     <a href="indexadm.php" class="logo">
-      <!-- mini logo for sidebar mini 50x50 pixels -->
-      <span class="logo-mini"><b>R</b>F</span>
-      <!-- logo for regular state and mobile devices -->
-      <span class="logo-lg"><b>Resto</b>Flow</span>
+      <img src="./dist/img/logorest.png" alt="RestoFlow Logo" style="height:50px; display:inline-block; margin-right:10px; margin-top:-5px;">
     </a>
     <!-- Header Navbar: style can be found in header.less -->
     <nav class="navbar navbar-static-top">

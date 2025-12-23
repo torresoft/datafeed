@@ -981,3 +981,433 @@ box-shadow: inset 0px 0px 22px 2px rgba(0,0,0,0.75);
 @media only screen and (min-width: 320px) {
   .mimibutton{max-width:28px;padding-left:6px;padding-right:6px;}
 }
+
+/* ========================================
+   MEJORAS VISUALES MODERNAS - AdminLTE 2.4.2
+   ======================================== */
+
+/* Animaciones suaves */
+.box, .info-box, .btn, .form-control, .dropdown-menu {
+    transition: all 0.3s ease;
+}
+
+/* Sombras modernas para cajas */
+.box {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border: none;
+}
+
+.box:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    transform: translateY(-2px);
+}
+
+/* Info boxes mejorados */
+.info-box {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 6px;
+    border: none;
+}
+
+.info-box:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+/* Botones con efectos modernos */
+.btn {
+    border-radius: 4px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Header con gradiente sutil */
+.main-header .navbar {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-bottom: none;
+}
+
+/* Mejora de tablas */
+.table {
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.table thead th {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    border: none;
+    padding: 12px 8px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(0,0,0,0.02);
+    transform: scale(1.01);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Labels y badges modernos */
+.label, .badge {
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+}
+
+/* Inputs mejorados */
+.form-control {
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #f39c12;
+    box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.15);
+}
+
+/* Box headers con estilo */
+.box-header {
+    background: linear-gradient(135deg, rgba(243, 156, 18, 0.05) 0%, rgba(230, 126, 34, 0.05) 100%);
+    border-bottom: 2px solid #f39c12;
+    padding: 15px;
+}
+
+.box-header .box-title {
+    font-weight: 600;
+    color: #333;
+    font-size: 16px;
+}
+
+/* Alertas mejoradas */
+.alert {
+    border-radius: 6px;
+    border-left: 4px solid;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.alert-info {
+    background: linear-gradient(135deg, #d1ecf1 0%, #e8f5f9 100%) !important;
+    border-left-color: #17a2b8 !important;
+    color: #0c5460 !important;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #e8f5e9 100%) !important;
+    border-left-color: #28a745 !important;
+    color: #155724 !important;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #fff8e1 100%) !important;
+    border-left-color: #ffc107 !important;
+    color: #856404 !important;
+    font-weight: 500 !important;
+}
+
+.alert-warning h4,
+.alert-warning .alert-heading {
+    color: #856404 !important;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #ffebee 100%) !important;
+    border-left-color: #dc3545 !important;
+    color: #721c24 !important;
+}
+
+/* Navegación mejorada */
+.navbar-nav > li > a {
+    transition: all 0.3s ease;
+}
+
+.navbar-nav > li > a:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+/* Dropdown menus */
+.dropdown-menu {
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+    border: none;
+    padding: 8px 0;
+}
+
+.dropdown-menu > li > a {
+    padding: 10px 20px;
+    transition: all 0.2s ease;
+}
+
+.dropdown-menu > li > a:hover {
+    background-color: #f39c12;
+    color: white;
+}
+
+/* Paginación mejorada */
+.pagination > li > a,
+.pagination > li > span {
+    border-radius: 4px;
+    margin: 0 2px;
+    border: 1px solid #e0e0e0;
+    transition: all 0.2s ease;
+}
+
+.pagination > li > a:hover {
+    background-color: #f39c12;
+    color: white;
+    border-color: #f39c12;
+}
+
+/* Mejoras para modales */
+.modal-content {
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    border: none;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    color: white;
+    border-radius: 8px 8px 0 0;
+    border: none;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+/* Loading indicators */
+.overlay {
+    background: rgba(255,255,255,0.95);
+}
+
+/* Cards con efecto glassmorphism */
+.card-glass {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+}
+
+/* Scroll suave */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Mejora de iconos */
+.fa, .ion {
+    transition: all 0.3s ease;
+}
+
+.btn .fa:hover,
+.btn .ion:hover {
+    transform: scale(1.1);
+}
+
+/* Progress bars mejorados */
+.progress {
+    border-radius: 10px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    background-color: #f0f0f0;
+}
+
+.progress-bar {
+    border-radius: 10px;
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
+/* Footer mejorado */
+.main-footer {
+    border-top: 1px solid #e0e0e0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+}
+
+/* Animación de carga */
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+.loading {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* Mejoras responsive */
+@media (max-width: 768px) {
+    .box-header .box-title {
+        font-size: 14px;
+    }
+    
+    .table thead th {
+        font-size: 11px;
+        padding: 8px 4px;
+    }
+}
+
+/* Scrollbar personalizado (solo Chrome/Edge) */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+}
+
+/* Tooltips mejorados */
+.tooltip-inner {
+    background-color: #333;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* Mejora visual para inputs de búsqueda */
+input[type="search"],
+input[placeholder*="Buscar"],
+input[placeholder*="buscar"] {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23999" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 35px;
+}
+
+/* ========================================
+   FIN MEJORAS VISUALES MODERNAS
+   ======================================== */
+
+/* ========================================
+   CORRECCIÓN DE CONTRASTE SKIN YELLOW
+   ======================================== */
+
+/* Mejorar contraste del navbar amarillo */
+.skin-yellow .main-header .navbar {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important;
+}
+
+.skin-yellow .main-header .navbar .nav > li > a,
+.skin-yellow .main-header .navbar .navbar-brand {
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.skin-yellow .main-header .navbar .nav > li > a:hover,
+.skin-yellow .main-header .navbar .nav > li > a:active,
+.skin-yellow .main-header .navbar .nav > li > a:focus {
+    background: rgba(0,0,0,0.1) !important;
+    color: #fff !important;
+}
+
+.skin-yellow .main-header .navbar .sidebar-toggle:hover {
+    background-color: rgba(0,0,0,0.1) !important;
+}
+
+/* Dropdown del usuario con mejor contraste */
+.skin-yellow .main-header .navbar .dropdown-menu {
+    background-color: #fff;
+}
+
+.skin-yellow .main-header .navbar .dropdown-menu > li > a {
+    color: #333 !important;
+    text-shadow: none;
+}
+
+.skin-yellow .main-header .navbar .dropdown-menu > li > a:hover {
+    background-color: #f39c12;
+    color: #fff !important;
+}
+
+/* User menu header con gradiente que contrasta */
+.skin-yellow .main-header .navbar .user-menu .dropdown-menu > .user-header {
+    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important;
+    color: #fff;
+}
+
+.skin-yellow .main-header .navbar .user-menu .dropdown-menu > .user-header p {
+    color: #fff !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+/* Logo con mejor contraste */
+.skin-yellow .main-header .logo {
+    background-color: #e08e0b;
+    color: #fff;
+    border-bottom: 0 solid transparent;
+}
+
+.skin-yellow .main-header .logo:hover {
+    background-color: #db8b0b;
+}
+
+/* Iconos en navbar con mejor visibilidad */
+.skin-yellow .main-header .navbar .fa,
+.skin-yellow .main-header .navbar .ion {
+    color: #fff !important;
+}
+
+/* Avatar del usuario con borde más visible */
+.skin-yellow .main-header .navbar .user-image {
+    border-color: rgba(255,255,255,0.5) !important;
+}
+
+/* Breadcrumb mejorado */
+.skin-yellow .content-header {
+    background: transparent;
+}
+
+/* Links en general con mejor contraste */
+.skin-yellow .content a {
+    color: #f39c12;
+}
+
+.skin-yellow .content a:hover {
+    color: #e67e22;
+}
+
+/* Botones en skin yellow */
+.skin-yellow .btn-primary {
+    background-color: #f39c12;
+    border-color: #e08e0b;
+}
+
+.skin-yellow .btn-primary:hover {
+    background-color: #e08e0b;
+    border-color: #d78407;
+}
+
+/* ========================================
+   FIN CORRECCIÓN DE CONTRASTE
+   ======================================== */

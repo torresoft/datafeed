@@ -156,15 +156,18 @@ if(count($serv)==0){
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>RestoFlow</title>
+  <title>RestoFlow | Sistema de Gestión</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <meta name="description" content="Sistema de gestión para restaurantes RestoFlow">
+  <meta name="theme-color" content="#f39c12">
+  
   <!-- Bootstrap 3.3.7 -->
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
   <!-- Font Awesome -->
   <link rel="stylesheet" href="bower_components/font-awesome/css/font-awesome.min.css">
   <!-- Ionicons -->
-  <link rel="icon" href="favicon.ico">
+  <link rel="icon" href="favicon.png" type="image/png">
   <link rel="stylesheet" href="bower_components/Ionicons/css/ionicons.min.css">
   <!-- Theme style -->
   <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
@@ -182,8 +185,9 @@ if(count($serv)==0){
   <!-- bootstrap wysihtml5 - text editor -->
   <link rel="stylesheet" href="plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
   <link rel="stylesheet" href="dist/css/nprogress.css" />
-<link rel="stylesheet" href="dist/css/colorpick.css">
-  <link rel="stylesheet" href="dist/css/custom.css" />
+  <link rel="stylesheet" href="dist/css/colorpick.css">
+  <link rel="stylesheet" href="dist/css/custom.css?v=2.0" />
+  
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
   <!--[if lt IE 9]>
@@ -207,7 +211,9 @@ if(count($serv)==0){
     <nav class="navbar navbar-static-top">
       <div class="container">
         <div class="navbar-header pull-left">
-          <a href="index.php" class="navbar-brand"><b>Resto</b>Flow</a>
+          <a href="index.php" class="navbar-brand" style="font-weight: 600; letter-spacing: 0.5px;">
+            <img src="./dist/img/logorest.png" alt="RestoFlow Logo" style="height:30px; display:inline-block; margin-right:10px; margin-top:-5px;">
+          </a>
         </div>
 
        
@@ -218,29 +224,33 @@ if(count($serv)==0){
             <!-- User Account Menu -->
             <li class="dropdown user user-menu">
               <!-- Menu Toggle Button -->
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="transition: all 0.3s ease;">
                 <!-- The user image in the navbar-->
-                <img src="<?php echo $gf->utf8($_SESSION["restuavatar"])?>" class="user-image" alt="User Image">
+                <img src="<?php echo $gf->utf8($_SESSION["restuavatar"])?>" class="user-image" alt="User Image" style="border: 2px solid rgba(255,255,255,0.3);">
                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                <span class="hidden-xs"><?php echo $gf->utf8($_SESSION["restuname"])?></span>
+                <span class="hidden-xs" style="font-weight: 500;"><?php echo $gf->utf8($_SESSION["restuname"])?></span>
               </a>
               <ul class="dropdown-menu">
                 <!-- The user image in the menu -->
-                <li class="user-header">
-                  <img src="<?php echo $gf->utf8($_SESSION["restuavatar"])?>" class="img-circle" alt="User Image">
+                <li class="user-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                  <img src="<?php echo $gf->utf8($_SESSION["restuavatar"])?>" class="img-circle" alt="User Image" style="border: 3px solid rgba(255,255,255,0.5);">
 
-                  <p>
+                  <p style="text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                     <?php echo $gf->utf8($_SESSION["restuname"])?>
-                    <small>Tender</small>
+                    <small style="opacity: 0.9;">Mesero</small>
                   </p>
                 </li>
                
                 <li class="user-footer">
                   <div class="pull-left">
-                  <a  href="#perfil_usuario" lnk="Admin/site_profile.php?flag=edit_me" class="btn btn-default btn-flat">Perfil</a>
+                  <a  href="#perfil_usuario" lnk="Admin/site_profile.php?flag=edit_me" class="btn btn-default btn-flat">
+                    <i class="fa fa-user"></i> Perfil
+                  </a>
                   </div>
                   <div class="pull-right">
-                    <a href="govlogin.php" class="btn btn-default btn-flat">Salir</a>
+                    <a href="govlogin.php" class="btn btn-danger btn-flat">
+                      <i class="fa fa-sign-out"></i> Salir
+                    </a>
                   </div>
                 </li>
               </ul>
@@ -290,9 +300,12 @@ if(count($serv)==0){
   <!-- /.content-wrapper -->
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 2
+      <b>Versión</b> 2.0 
+      <i class="fa fa-heart text-danger" style="margin: 0 5px;"></i>
     </div>
-    <strong></strong>
+    <strong>
+      <i class="fa fa-copyright"></i> <?php echo date('Y'); ?> RestoFlow
+    </strong>
   </footer>
   <div class='hidden'>
   <div class='hidden'>
