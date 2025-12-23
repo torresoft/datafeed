@@ -271,7 +271,7 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
   <!-- Google Font -->
   <link rel="stylesheet" href="styles/fuentes.css">
 </head>
-<body class="hold-transition skin-black sidebar-mini">
+<body class="hold-transition skin-yellow sidebar-mini">
 <input type='hidden' id='username' value='<?php echo $gf->utf8($_SESSION["restorigin"]);?>' />
 <input type='hidden' id='usertoken' value='<?php echo $gf->utf8($_SESSION["tk"]);?>' />
 <div class="wrapper">

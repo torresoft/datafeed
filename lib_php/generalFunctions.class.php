@@ -62,6 +62,7 @@ class generalFunctions{
 		$m="";
 		$cmp="qwertyuioplkjhgfdsazxcvbnmrtyuihgfas";
 		for($i=0;$i<strlen($work)-1;$i++){
+			$let=substr($work,$i,1);
 			if(is_numeric($let)){
 				$m.=($work[$i]*8)%10;
 			}else{

@@ -27,9 +27,112 @@ session_start();
 	<!-- jQuery UI 1.11.4 -->
 	<script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
 	<!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
-</head><body style="background:url(../misc/bg.jpg) no-repeat right bottom fixed;">
+<style>
+/* Estilos de Login con tema Fuego */
+@keyframes fireFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
 
-<div class='ui-widget ui-widget-content' style='width:320px;height:350px;margin-left:auto;margin-right:auto;margin-top:100px;background:#FFF;'><table align='center' width='100%'><tr><td align='center'><img src='./misc/logo.png' style="width:50%" /></td></tr><tr><td align='center'><img src='load.gif' align='center' /><hr />
+@keyframes fireGlowPulse {
+    0%, 100% { box-shadow: 0 0 20px rgba(255,152,0,0.3), 0 0 40px rgba(255,87,34,0.2), 0 10px 60px rgba(0,0,0,0.3); }
+    50% { box-shadow: 0 0 30px rgba(255,152,0,0.5), 0 0 60px rgba(255,87,34,0.4), 0 15px 80px rgba(0,0,0,0.4); }
+}
+
+@keyframes spinner {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+body {
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../misc/bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    opacity: 0.08;
+    z-index: 0;
+}
+
+.ui-widget {
+    position: relative;
+    z-index: 1;
+    background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(255,248,240,0.95) 100%) !important;
+    border-radius: 15px !important;
+    border: 2px solid rgba(255,152,0,0.3) !important;
+    animation: fireGlowPulse 4s ease-in-out infinite, fireFloat 6s ease-in-out infinite;
+    backdrop-filter: blur(10px);
+    padding: 30px !important;
+    box-shadow: 0 0 20px rgba(255,152,0,0.3), 0 0 40px rgba(255,87,34,0.2), 0 10px 60px rgba(0,0,0,0.3);
+}
+
+.ui-widget img[src*='logorest'] {
+    filter: brightness(1.1) drop-shadow(0 4px 12px rgba(0,0,0,0.8)) drop-shadow(0 0 20px rgba(255,255,255,0.3));
+    transition: all 0.3s ease;
+}
+
+.ui-widget img[src*='load.gif'] {
+    filter: drop-shadow(0 2px 8px rgba(255,152,0,0.5));
+}
+
+.ui-widget table {
+    color: #333;
+}
+
+.ui-widget b {
+    color: #ff5722;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.ui-widget hr {
+    border-color: rgba(255,152,0,0.2);
+    margin: 15px 0;
+}
+
+.msjcampo {
+    color: #ff5722;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+/* Avatar y logo de empresa con efecto */
+.ui-widget img[width='30'],
+.ui-widget img[width='35'] {
+    border-radius: 50%;
+    border: 2px solid rgba(255,152,0,0.3);
+    padding: 2px;
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 2px 8px rgba(255,152,0,0.3);
+}
+
+/* Estilo para el nombre de empresa */
+.ui-widget td {
+    font-size: 12px;
+    color: #555;
+}
+
+.ui-widget td b {
+    font-size: 14px;
+}
+</style>
+</head><body>
+
+<div class='ui-widget ui-widget-content' style='width:350px;margin-left:auto;margin-right:auto;'><table align='center' width='100%'><tr><td align='center'><img src='./dist/img/logorest.png' style="width:50%" /></td></tr><tr><td align='center'><img src='load.gif' align='center' /><hr />
 <?php
 	include_once("./config.php");
 	require_once("./lib_php/generalFunctions.class.php");
@@ -305,7 +408,7 @@ if(isset($_POST["namerestuser"])){
 	$(document).ready(function(){
 		//let server="https://www.torresoft.co:3443";
 		//let server="http://192.168.1.65:3000";
-		let server="http://192.168.43.40:3000/datafeed";
+		let server="http://192.168.1.19:3000/datafeed";
 		let endpoint="/user/auth";
 
 		let username=$("#username").val();

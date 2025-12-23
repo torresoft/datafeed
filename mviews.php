@@ -926,29 +926,41 @@ date_default_timezone_set("America/Bogota");
 					$nchairs=1;
 				}
 
-				$res=$gf->dataInLast("INSERT INTO pedidos (ID_MESA,ID_SERVICIO,APERTURA,ID_TENDER,DIRECCION,DENOM) VALUES ('$id_mesa','{$_SESSION["restservice"]}',NOW(),'{$_SESSION["restuiduser"]}','$direccion','$devuelta')");
-				if($res>0){
-					$id_pedido=$res;
-					for($i=1;$i<=$nchairs;$i++){
-						$gf->dataIn("INSERT INTO sillas (ID_PEDIDO) VALUES ('$id_pedido')");
-						$gf->log($_SESSION["restbus"],$id_mesa,$id_pedido,"PEDIDO CREADO",$_SESSION["restuiduser"]);
+				//validar que no exista un pedido abierto
+				$valida=$gf->dataSet("SELECT P.ID_PEDIDO, CONCAT(T.NOMBRES,' ',T.APELLIDOS) AS TENDER FROM pedidos P JOIN usuarios T ON T.ID_USUARIO=P.ID_TENDER WHERE P.ID_MESA='$id_mesa' AND P.CIERRE='0000-00-00 00:00:00' AND P.ID_SERVICIO='{$_SESSION["restservice"]}'");
+				if(count($valida)==0 || $t=="D"){
+
+
+
+					$res=$gf->dataInLast("INSERT INTO pedidos (ID_MESA,ID_SERVICIO,APERTURA,ID_TENDER,DIRECCION,DENOM) VALUES ('$id_mesa','{$_SESSION["restservice"]}',NOW(),'{$_SESSION["restuiduser"]}','$direccion','$devuelta')");
+					if($res>0){
+						$id_pedido=$res;
+						for($i=1;$i<=$nchairs;$i++){
+							$gf->dataIn("INSERT INTO sillas (ID_PEDIDO) VALUES ('$id_pedido')");
+							$gf->log($_SESSION["restbus"],$id_mesa,$id_pedido,"PEDIDO CREADO",$_SESSION["restuiduser"]);
+						}
+						if(isset($_POST["id_mesa"])){
+							$id_res= $gf->cleanVar($_GET["id_res"]);
+							$gf->dataIn("UPDATE reservas SET ESTADO='1', ID_PEDIDO='$id_pedido' WHERE ID_RESERVA='$id_res'");
+							$gf->log($_SESSION["restbus"],$id_mesa,$id_pedido,"PEDIDO CREADO DESDE RESERVA $id_res",$_SESSION["restuiduser"]);
+						}
+						$tender=$_SESSION["restuiduser"];
+						echo $gf->utf8("
+						<script>
+							$(function(){
+								sockEmitir('ocupar',{id_mesa:$id_mesa,id_pedido:$id_pedido,tender:$tender});
+							});
+						</script>
+						<input type='hidden' id='callbackeval' lnk-tsf='#mesa-$id_mesa' lnk-cont='contenidos-aux' value=\"loadMask('$sender?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido&t=$t');closeD('$rnd')\" />
+						");
+					}else{
+						echo "bad";
 					}
-					if(isset($_POST["id_mesa"])){
-						$id_res= $gf->cleanVar($_GET["id_res"]);
-						$gf->dataIn("UPDATE reservas SET ESTADO='1', ID_PEDIDO='$id_pedido' WHERE ID_RESERVA='$id_res'");
-						$gf->log($_SESSION["restbus"],$id_mesa,$id_pedido,"PEDIDO CREADO DESDE RESERVA $id_res",$_SESSION["restuiduser"]);
-					}
-					$tender=$_SESSION["restuiduser"];
-					echo $gf->utf8("
-					<script>
-						$(function(){
-							sockEmitir('ocupar',{id_mesa:$id_mesa,id_pedido:$id_pedido,tender:$tender});
-						});
-					</script>
-					<input type='hidden' id='callbackeval' lnk-tsf='#mesa-$id_mesa' lnk-cont='contenidos-aux' value=\"loadMask('$sender?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido&t=$t');closeD('$rnd')\" />
-					");
 				}else{
-					echo "bad";
+					$tender=$valida[0]["TENDER"];
+					echo $gf->utf8("Hay un pedido activo en esta mesa abierto por $tender, verifica si est&aacute;s en la mesa correcta<br />
+					<hr />
+					");
 				}
 			}elseif($flag=="infomesas"){
 				$resultInt = $gf->dataSet("SELECT M.ID_MESA, P.ID_PEDIDO, COUNT(DISTINCT SI.ID_SILLA) AS SILLAS, COUNT( SP.ID_ITEM) AS TOTPLA, SUM(SP.LISTO) AS LISTO, P.CHEF, P.CAJA FROM mesas AS M LEFT JOIN pedidos AS P ON (M.ID_MESA=P.ID_MESA AND P.CIERRE='0000-00-00 00:00:00' AND P.ID_SERVICIO='{$_SESSION["restservice"]}') LEFT JOIN sillas AS SI ON (P.ID_PEDIDO=SI.ID_PEDIDO) LEFT JOIN sillas_platos AS SP ON(SI.ID_SILLA=SP.ID_SILLA) LEFT JOIN platos AS PL ON(PL.ID_PLATO=SP.ID_PLATO AND PL.COCINA=1) WHERE M.ID_SITIO='".$_SESSION["restbus"]."' GROUP BY M.ID_MESA");

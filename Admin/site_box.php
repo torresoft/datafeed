@@ -3566,6 +3566,9 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 			} 
 		}
 
+		if($tot_anticipos=="") $tot_anticipos=0;
+		if($ingre_arcabos=="") $ingre_arcabos=0;
+		if($ajustes=="") $ajustes=0;
 
 
 		if(count($resultInt)>0){

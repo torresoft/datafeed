@@ -1313,26 +1313,46 @@ input[placeholder*="buscar"] {
    CORRECCIÓN DE CONTRASTE SKIN YELLOW
    ======================================== */
 
-/* Mejorar contraste del navbar amarillo */
+/* Mejorar contraste del navbar naranja fuego */
 .skin-yellow .main-header .navbar {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important;
+    background: linear-gradient(180deg, #ff9800 0%, #ff5722 50%, #f44336 100%) !important;
+    box-shadow: 0 4px 15px rgba(244, 67, 54, 0.5);
+    position: relative;
+}
+
+.skin-yellow .main-header .navbar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(255,193,7,0.3) 50%, transparent 100%);
+    animation: fireGlow 3s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes fireGlow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.6; }
 }
 
 .skin-yellow .main-header .navbar .nav > li > a,
 .skin-yellow .main-header .navbar .navbar-brand {
     color: #fff !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6), 0 0 10px rgba(255,152,0,0.5);
 }
 
 .skin-yellow .main-header .navbar .nav > li > a:hover,
 .skin-yellow .main-header .navbar .nav > li > a:active,
 .skin-yellow .main-header .navbar .nav > li > a:focus {
-    background: rgba(0,0,0,0.1) !important;
+    background: rgba(255,193,7,0.2) !important;
     color: #fff !important;
+    text-shadow: 0 0 15px rgba(255,193,7,0.8);
 }
 
 .skin-yellow .main-header .navbar .sidebar-toggle:hover {
-    background-color: rgba(0,0,0,0.1) !important;
+    background-color: rgba(255,193,7,0.2) !important;
 }
 
 /* Dropdown del usuario con mejor contraste */
@@ -1346,14 +1366,15 @@ input[placeholder*="buscar"] {
 }
 
 .skin-yellow .main-header .navbar .dropdown-menu > li > a:hover {
-    background-color: #f39c12;
+    background: linear-gradient(90deg, #ff9800 0%, #ff5722 100%);
     color: #fff !important;
 }
 
-/* User menu header con gradiente que contrasta */
+/* User menu header con gradiente naranja fuego */
 .skin-yellow .main-header .navbar .user-menu .dropdown-menu > .user-header {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%) !important;
+    background: linear-gradient(180deg, #ff9800 0%, #ff5722 50%, #f44336 100%) !important;
     color: #fff;
+    box-shadow: inset 0 -3px 10px rgba(255,193,7,0.4);
 }
 
 .skin-yellow .main-header .navbar .user-menu .dropdown-menu > .user-header p {
@@ -1361,15 +1382,18 @@ input[placeholder*="buscar"] {
     text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
-/* Logo con mejor contraste */
+/* Logo con naranja oscuro */
 .skin-yellow .main-header .logo {
-    background-color: #e08e0b;
+    background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
     color: #fff;
     border-bottom: 0 solid transparent;
+    box-shadow: 0 3px 10px rgba(255,87,34,0.5);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
 }
 
 .skin-yellow .main-header .logo:hover {
-    background-color: #db8b0b;
+    background: linear-gradient(135deg, #ff5722 0%, #f44336 100%);
+    box-shadow: 0 3px 15px rgba(244,67,54,0.6);
 }
 
 /* Iconos en navbar con mejor visibilidad */
@@ -1388,24 +1412,30 @@ input[placeholder*="buscar"] {
     background: transparent;
 }
 
-/* Links en general con mejor contraste */
+/* Links en general con naranja fuego */
 .skin-yellow .content a {
-    color: #f39c12;
+    color: #ff5722;
 }
 
 .skin-yellow .content a:hover {
-    color: #e67e22;
+    color: #f44336;
+    text-shadow: 0 0 8px rgba(255,87,34,0.4);
 }
 
-/* Botones en skin yellow */
+/* Botones en skin yellow con naranja fuego */
 .skin-yellow .btn-primary {
-    background-color: #f39c12;
-    border-color: #e08e0b;
+    background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+    border-color: #ff5722;
+    box-shadow: 0 4px 8px rgba(255,87,34,0.4);
+    color: #fff;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
 .skin-yellow .btn-primary:hover {
-    background-color: #e08e0b;
-    border-color: #d78407;
+    background: linear-gradient(135deg, #ff5722 0%, #f44336 100%);
+    border-color: #f44336;
+    box-shadow: 0 6px 12px rgba(244,67,54,0.5);
+    transform: translateY(-1px);
 }
 
 /* ========================================
