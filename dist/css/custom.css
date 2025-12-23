@@ -1411,3 +1411,169 @@ input[placeholder*="buscar"] {
 /* ========================================
    FIN CORRECCIÓN DE CONTRASTE
    ======================================== */
+
+/* ========================================
+   CORRECCIÓN SKIN BLACK - AdminLTE 2.4.2
+   ======================================== */
+
+/* Main Header Negro */
+.skin-black .main-header .navbar {
+    background-color: #222d32 !important;
+}
+
+.skin-black .main-header .navbar .nav > li > a {
+    color: #fff !important;
+}
+
+.skin-black .main-header .navbar .nav > li > a:hover,
+.skin-black .main-header .navbar .nav > li > a:active,
+.skin-black .main-header .navbar .nav > li > a:focus,
+.skin-black .main-header .navbar .nav .open > a,
+.skin-black .main-header .navbar .nav .open > a:hover,
+.skin-black .main-header .navbar .nav .open > a:focus {
+    background: rgba(0, 0, 0, 0.1) !important;
+    color: #f6f6f6 !important;
+}
+
+.skin-black .main-header .navbar .sidebar-toggle {
+    color: #fff !important;
+}
+
+.skin-black .main-header .navbar .sidebar-toggle:hover {
+    color: #f6f6f6 !important;
+    background: rgba(0, 0, 0, 0.1) !important;
+}
+
+.skin-black .main-header .logo {
+    background-color: #222d32 !important;
+    color: #fff !important;
+    border-bottom: 0 solid transparent !important;
+}
+
+.skin-black .main-header .logo:hover {
+    background-color: #1a2226 !important;
+}
+
+.skin-black .main-header li.user-header {
+    background-color: #222d32 !important;
+}
+
+/* Sidebar Negro */
+.skin-black .main-sidebar,
+.skin-black .left-side {
+    background-color: #222d32 !important;
+}
+
+.skin-black .sidebar-menu > li.header {
+    color: #848484 !important;
+    background: #1a2226 !important;
+}
+
+.skin-black .sidebar-menu > li > a {
+    border-left: 3px solid transparent !important;
+}
+
+.skin-black .sidebar-menu > li:hover > a,
+.skin-black .sidebar-menu > li.active > a {
+    color: #fff !important;
+    background: #1e282c !important;
+    border-left-color: #fff !important;
+}
+
+.skin-black .sidebar-menu > li.active > a {
+    border-left-color: #f39c12 !important;
+}
+
+.skin-black .sidebar a {
+    color: #b8c7ce !important;
+}
+
+.skin-black .sidebar a:hover {
+    text-decoration: none !important;
+}
+
+.skin-black .treeview-menu > li > a {
+    color: #b8c7ce !important;
+}
+
+.skin-black .treeview-menu > li.active > a,
+.skin-black .treeview-menu > li > a:hover {
+    color: #fff !important;
+}
+
+.skin-black .sidebar-form {
+    border-radius: 3px !important;
+    border: 1px solid #374850 !important;
+    margin: 10px 10px !important;
+}
+
+.skin-black .sidebar-form input[type="text"],
+.skin-black .sidebar-form .btn {
+    box-shadow: none !important;
+    background-color: #374850 !important;
+    border: 1px solid transparent !important;
+    height: 35px !important;
+}
+
+.skin-black .sidebar-form input[type="text"] {
+    color: #666 !important;
+    border-top-left-radius: 2px !important;
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-left-radius: 2px !important;
+}
+
+.skin-black .sidebar-form input[type="text"]:focus,
+.skin-black .sidebar-form input[type="text"]:focus + .input-group-btn .btn {
+    background-color: #fff !important;
+    color: #666 !important;
+}
+
+.skin-black .sidebar-form .btn {
+    color: #999 !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 2px !important;
+    border-bottom-right-radius: 2px !important;
+    border-bottom-left-radius: 0 !important;
+}
+
+/* User Panel */
+.skin-black .user-panel > .info,
+.skin-black .user-panel > .info > a {
+    color: #fff !important;
+}
+
+/* Content Wrapper */
+.skin-black .content-wrapper {
+    background-color: #ecf0f5 !important;
+}
+
+/* Control Sidebar */
+.skin-black .control-sidebar {
+    background: #222d32 !important;
+}
+
+/* Dropdowns en navbar negro */
+.skin-black .navbar-custom-menu > .navbar-nav > li > .dropdown-menu {
+    border-top-color: #222d32 !important;
+}
+
+/* Icons en sidebar */
+.skin-black .sidebar-menu .fa,
+.skin-black .sidebar-menu .ion,
+.skin-black .sidebar-menu .glyphicon {
+    color: #b8c7ce !important;
+}
+
+.skin-black .sidebar-menu > li:hover > a > .fa,
+.skin-black .sidebar-menu > li:hover > a > .ion,
+.skin-black .sidebar-menu > li:hover > a > .glyphicon,
+.skin-black .sidebar-menu > li.active > a > .fa,
+.skin-black .sidebar-menu > li.active > a > .ion,
+.skin-black .sidebar-menu > li.active > a > .glyphicon {
+    color: #fff !important;
+}
+
+/* ========================================
+   FIN CORRECCIÓN SKIN BLACK
+   ======================================== */
