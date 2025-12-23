@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 ini_set("display_errors",1);
 session_start();
 date_default_timezone_set("America/Bogota");
@@ -653,6 +653,7 @@ date_default_timezone_set("America/Bogota");
 							$onclik="onclick=\"getDialog('$sender?flag=$addons','300','Crear\ Pedido')\"";
 						}
 						$moto="";
+						$statusBadge = "";
 						if($tipo=="D"){
 							$totals="";
 							$elicon="<i class='fa $icon' id='mesa_icon_$id_mesa'></i>";
@@ -665,30 +666,45 @@ date_default_timezone_set("America/Bogota");
 							$elicon=$mesan;
 							$dv="";
 						}
-						$progress="
-						<div class='progress progress-xs' style='margin-bottom:5px; border-radius:4px; overflow:hidden;'>
-							<div class='progress-bar progress-bar-warning' id='mesa_progress_$id_mesa' style='width: $perc%; transition: width 0.4s ease;'></div>
-						</div>";
+						
+						// Determinar badge de estado
+						if($id_pedido!="" && $tipo!="D"){
+							if($chef!="0000-00-00 00:00:00"){
+								$statusBadge = "<span class='badge' style='background:#ff9800; color:#fff; padding:3px 10px; border-radius:12px; font-size:9px; font-weight:600;'><i class='fa fa-fire'></i> EN COCINA</span>";
+							}else{
+								$statusBadge = "<span class='badge' style='background:#f44336; color:#fff; padding:3px 10px; border-radius:12px; font-size:9px; font-weight:600;'><i class='fa fa-cutlery'></i> ACTIVO</span>";
+							}
+						}
 						
 						echo $gf->utf8("
-						<div class='col-lg-3 col-md-4 col-sm-6 col-xs-12 lasmesas grupi_$id_grupo data-filtrable' id='tbl_$id_mesa' t='$tipo' idm='$id_mesa' $onclik timer='$apertura' style='transition: all 0.3s ease;'>
-						  <div class='small-box $classd' id='infoboxa_$id_mesa' style='cursor:pointer; transition: all 0.3s ease; border-radius:8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); overflow:hidden;' onmouseover=\"this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.15)';\" onmouseout=\"this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.1)';\">
-							<div class='inner' style='color:$textcolor !important; padding:10px 12px;'>
-							  <h3 style='margin:0; font-size:24px; color:$textcolor !important;'>$elicon</h3>
-							  <p style='font-size:12px; margin:3px 0 0 0; color:$textcolor !important;'><strong>$nombre</strong> $moto</p>
-							  <div style='margin:5px 0 3px 0; color:$textcolor !important;'>
-								<span id='mesa_sillas_$id_mesa' style='font-size:11px;'>$chair</span>
-								<span class='pull-right' style='font-size:13px; font-weight:bold;'>$totals</span>
+						<div class='col-lg-3 col-md-4 col-sm-6 col-xs-12 lasmesas grupi_$id_grupo data-filtrable' id='tbl_$id_mesa' t='$tipo' idm='$id_mesa' $onclik timer='$apertura' style='transition: all 0.3s ease; margin-bottom:20px;'>
+						  <div class='small-box $classd' id='infoboxa_$id_mesa' style='cursor:pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius:16px; box-shadow: 0 4px 16px rgba(0,0,0,0.18); overflow:visible; position:relative;' onmouseover=\"this.style.transform='translateY(-8px) scale(1.03)'; this.style.boxShadow='0 12px 28px rgba(0,0,0,0.30)';\" onmouseout=\"this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,0.18)';\">
+							
+							<div class='inner' style='color:$textcolor !important; padding:18px 16px; position:relative; z-index:2;'>
+							  <div style='display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px;'>
+								<h3 style='margin:0; font-size:36px; font-weight:800; color:$textcolor !important; text-shadow:0 3px 6px rgba(0,0,0,0.16); line-height:1;'>$elicon</h3>
+								$statusBadge
 							  </div>
-							  $progress
-							  <div style='font-size:10px; opacity:0.85; color:$textcolor !important; margin-top:2px;'>
-								<i class='fa fa-clock-o'></i> <span id='pg_description_k_$id_mesa'>$avante</span>
-								<span class='pull-right tdr' style='font-size:9px;'><i class='fa fa-user'></i> $tender</span>
+							  
+							  <p style='font-size:14px; margin:8px 0 10px 0; color:$textcolor !important; font-weight:600; opacity:0.95;'>$nombre $moto</p>
+							  
+							  <div style='background:rgba(0,0,0,0.12); border-radius:10px; padding:10px 12px; margin:10px 0;'>
+								<div style='display:flex; justify-content:space-between; align-items:center; color:$textcolor !important;'>
+								  <span id='mesa_sillas_$id_mesa' style='font-size:12px; font-weight:600; opacity:0.9;'>$chair</span>
+								  <span class='pull-right' style='font-size:18px; font-weight:800; letter-spacing:-0.5px;'>$totals</span>
+								</div>
+							  </div>
+							  
+							  <div style='font-size:11px; color:$textcolor !important; margin-top:10px; display:flex; justify-content:space-between; align-items:center; opacity:0.88;'>
+								<span style='font-weight:500;'><i class='fa fa-clock-o'></i> <span id='pg_description_k_$id_mesa' style='font-weight:600;'>$avante</span></span>
+								<span class='tdr' style='font-size:10px; font-weight:500;'><i class='fa fa-user'></i> $tender</span>
 							  </div>
 							</div>
-							<div class='icon'>
-							  <i class='fa $icon' id='mesa_icon_$id_mesa' style='opacity:0.18; transition: opacity 0.3s ease;'></i>
+							
+							<div class='icon' style='position:absolute; right:10px; bottom:8px; z-index:1;'>
+							  <i class='fa $icon' id='mesa_icon_$id_mesa' style='opacity:0.12; font-size:72px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);'></i>
 							</div>
+							
 						  </div>
 						</div>
 						");
