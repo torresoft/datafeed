@@ -102,7 +102,7 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 			exit;
 		}
 
-		$rsInventarios=$gf->dataSet("SELECT C.ID_REL, I.ID_INGREDIENTE, I.NOMBRE, I.DESCRIPCION, I.UNIDAD_MEDIDA, I.UNIDADES_PRESENTACION, C.ID_COMPRA, SUM(C.CANTIDAD) AS PRES_INGRESO, BAJA.PRES_SALIDA, I.MINIMA, IB.CANTBAJA AS BAJAS_MANUALES FROM ingredientes I LEFT JOIN inventario C ON C.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT I.ID_INGREDIENTE, SUM(RI.CANTIDAD*SP.CANTIDAD) AS PRES_SALIDA FROM ingredientes I JOIN racion_ingredientes RI ON I.ID_INGREDIENTE=RI.ID_INGREDIENTE JOIN racion_opciones RO ON RO.ID_OPCION=RI.ID_RACION JOIN platos_composicion PC ON PC.ID_RACION=RO.ID_RACION JOIN sillas_platos SP ON SP.ID_PLATO=PC.ID_PLATO JOIN sillas S ON S.ID_SILLA=SP.ID_SILLA JOIN pedidos P ON P.ID_PEDIDO=S.ID_PEDIDO JOIN servicio SE ON SE.ID_SERVICIO=P.ID_SERVICIO WHERE SE.ID_SITIO=:sitio AND SE.FECHA BETWEEN '$desde' AND '$hasta' GROUP BY I.ID_INGREDIENTE ORDER BY I.ID_INGREDIENTE)BAJA ON BAJA.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT ID_INGREDIENTE, SUM(CANTIDAD) AS CANTBAJA FROM inventario_bajas WHERE FECHA BETWEEN '$desde' AND '$hasta' GROUP BY ID_INGREDIENTE ORDER BY ID_INGREDIENTE)IB ON I.ID_INGREDIENTE=IB.ID_INGREDIENTE  WHERE I.ID_SITIO=:sitio GROUP BY I.ID_INGREDIENTE ORDER BY I.NOMBRE",array(":sitio"=>$_SESSION["restbus"]));
+		$rsInventarios=$gf->dataSet("SELECT C.ID_REL, I.ID_INGREDIENTE, I.NOMBRE, I.DESCRIPCION, I.UNIDAD_MEDIDA, I.UNIDADES_PRESENTACION, C.ID_COMPRA, SUM(C.CANTIDAD) AS PRES_INGRESO, IFNULL(BAJA.PRES_SALIDA,0) AS PRES_SALIDA, I.MINIMA, IFNULL(IB.CANTBAJA,0) AS BAJAS_MANUALES FROM ingredientes I LEFT JOIN inventario C ON C.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT I.ID_INGREDIENTE, SUM(RI.CANTIDAD*SP.CANTIDAD) AS PRES_SALIDA FROM ingredientes I JOIN racion_ingredientes RI ON I.ID_INGREDIENTE=RI.ID_INGREDIENTE JOIN racion_opciones RO ON RO.ID_OPCION=RI.ID_RACION JOIN platos_composicion PC ON PC.ID_RACION=RO.ID_RACION JOIN sillas_platos SP ON SP.ID_PLATO=PC.ID_PLATO JOIN sillas_platos_composicion SPC ON SPC.ID_ITEM=SP.ID_ITEM AND RO.ID_OPCION=SPC.ID_OPCION AND SPC.ID_RACION=PC.ID_RACION AND SPC.ESTADO=1 JOIN sillas S ON S.ID_SILLA=SP.ID_SILLA JOIN pedidos P ON P.ID_PEDIDO=S.ID_PEDIDO JOIN servicio SE ON SE.ID_SERVICIO=P.ID_SERVICIO WHERE SE.ID_SITIO=:sitio AND SE.FECHA BETWEEN '$desde' AND '$hasta' GROUP BY I.ID_INGREDIENTE ORDER BY I.ID_INGREDIENTE)BAJA ON BAJA.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT ID_INGREDIENTE, SUM(CANTIDAD) AS CANTBAJA FROM inventario_bajas WHERE FECHA BETWEEN '$desde' AND '$hasta' GROUP BY ID_INGREDIENTE ORDER BY ID_INGREDIENTE)IB ON I.ID_INGREDIENTE=IB.ID_INGREDIENTE  WHERE I.ID_SITIO=:sitio GROUP BY I.ID_INGREDIENTE ORDER BY I.NOMBRE",array(":sitio"=>$_SESSION["restbus"]));
 		
 		echo $gf->utf8("
 		<div class='box box-danger'>
@@ -133,6 +133,12 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 				$salida_presentaciones=$rOp["PRES_SALIDA"];
 				$bajas_manuales=$rOp["BAJAS_MANUALES"];
 				$minima=$rOp["MINIMA"];
+				
+				// Validar valores y evitar división por cero
+				$salida_presentaciones = $salida_presentaciones ?: 0;
+				$bajas_manuales = $bajas_manuales ?: 0;
+				$up = $up > 0 ? $up : 1;
+				
 				$existencia=$ingreso_presentaciones-$salida_presentaciones;
 				$totalpres=($salida_presentaciones+$bajas_manuales)/$up;
 				if($existencia<=$minima){
@@ -162,7 +168,7 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 
 
 	}elseif($actividad=="estado_inventario"){
-		$rsInventarios=$gf->dataSet("SELECT C.ID_REL, I.ID_INGREDIENTE, I.NOMBRE, I.DESCRIPCION, I.UNIDAD_MEDIDA, I.UNIDADES_PRESENTACION, C.ID_COMPRA, SUM(C.CANTIDAD) AS PRES_INGRESO, IB.CANTBAJA AS BAJAMANUAL, BAJA.PRES_SALIDA, I.MINIMA FROM ingredientes I LEFT JOIN inventario C ON C.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT I.ID_INGREDIENTE, SUM(RI.CANTIDAD*SP.CANTIDAD) AS PRES_SALIDA FROM ingredientes I JOIN racion_ingredientes RI ON I.ID_INGREDIENTE=RI.ID_INGREDIENTE JOIN racion_opciones RO ON RO.ID_OPCION=RI.ID_RACION JOIN platos_composicion PC ON PC.ID_RACION=RO.ID_RACION JOIN sillas_platos SP ON SP.ID_PLATO=PC.ID_PLATO JOIN sillas_platos_composicion SPC ON SPC.ID_ITEM=SP.ID_ITEM AND RO.ID_OPCION=SPC.ID_OPCION AND SPC.ID_RACION=PC.ID_RACION AND SPC.ESTADO=1 JOIN sillas S ON S.ID_SILLA=SP.ID_SILLA JOIN pedidos P ON P.ID_PEDIDO=S.ID_PEDIDO JOIN servicio SE ON SE.ID_SERVICIO=P.ID_SERVICIO WHERE SE.ID_SITIO=:sitio AND P.CIERRE<>'0000-00-00' GROUP BY I.ID_INGREDIENTE ORDER BY I.ID_INGREDIENTE)BAJA ON BAJA.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT ID_INGREDIENTE, SUM(CANTIDAD) AS CANTBAJA FROM inventario_bajas WHERE 1 GROUP BY ID_INGREDIENTE ORDER BY ID_INGREDIENTE)IB ON I.ID_INGREDIENTE=IB.ID_INGREDIENTE WHERE I.ID_SITIO=:sitio GROUP BY I.ID_INGREDIENTE ORDER BY I.NOMBRE",array(":sitio"=>$_SESSION["restbus"]));
+		$rsInventarios=$gf->dataSet("SELECT C.ID_REL, I.ID_INGREDIENTE, I.NOMBRE, I.DESCRIPCION, I.UNIDAD_MEDIDA, I.UNIDADES_PRESENTACION, C.ID_COMPRA, SUM(C.CANTIDAD) AS PRES_INGRESO, IFNULL(IB.CANTBAJA,0) AS BAJAMANUAL, IFNULL(BAJA.PRES_SALIDA,0) AS PRES_SALIDA, I.MINIMA FROM ingredientes I LEFT JOIN inventario C ON C.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT I.ID_INGREDIENTE, SUM(RI.CANTIDAD*SP.CANTIDAD) AS PRES_SALIDA FROM ingredientes I JOIN racion_ingredientes RI ON I.ID_INGREDIENTE=RI.ID_INGREDIENTE JOIN racion_opciones RO ON RO.ID_OPCION=RI.ID_RACION JOIN platos_composicion PC ON PC.ID_RACION=RO.ID_RACION JOIN sillas_platos SP ON SP.ID_PLATO=PC.ID_PLATO JOIN sillas_platos_composicion SPC ON SPC.ID_ITEM=SP.ID_ITEM AND RO.ID_OPCION=SPC.ID_OPCION AND SPC.ID_RACION=PC.ID_RACION AND SPC.ESTADO=1 JOIN sillas S ON S.ID_SILLA=SP.ID_SILLA JOIN pedidos P ON P.ID_PEDIDO=S.ID_PEDIDO JOIN servicio SE ON SE.ID_SERVICIO=P.ID_SERVICIO WHERE SE.ID_SITIO=:sitio AND P.CIERRE<>'0000-00-00 00:00:00' GROUP BY I.ID_INGREDIENTE ORDER BY I.ID_INGREDIENTE)BAJA ON BAJA.ID_INGREDIENTE=I.ID_INGREDIENTE LEFT JOIN (SELECT ID_INGREDIENTE, SUM(CANTIDAD) AS CANTBAJA FROM inventario_bajas WHERE 1 GROUP BY ID_INGREDIENTE ORDER BY ID_INGREDIENTE)IB ON I.ID_INGREDIENTE=IB.ID_INGREDIENTE WHERE I.ID_SITIO=:sitio GROUP BY I.ID_INGREDIENTE ORDER BY I.NOMBRE",array(":sitio"=>$_SESSION["restbus"]));
 		
 		echo $gf->utf8("
 		<div class='box box-danger'>
@@ -175,6 +181,8 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 						<th>DESCRIPCION</th>
 						<th>PRESENTACI&Oacute;N</th>
 						<th>INGRESO-PRESENTACIONES</th>
+						<th>SALIDA-UNIDADES</th>
+						<th>BAJAS-UNIDADES</th>
 						<th>SALIDA-PRESENTACIONES</th>
 						<th>EXISTENCIA</th>
 						<th>ESTADO</th>
@@ -193,31 +201,41 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 				$ingreso_presentaciones=$rOp["PRES_INGRESO"];
 				$salida_unidades=$rOp["PRES_SALIDA"];
 				$bajas_manuales=$rOp["BAJAMANUAL"];
-				$salida_presentaciones=($salida_unidades+$bajas_manuales)/$up;
-				$minima=$rOp["MINIMA"];
-				$existencia=$ingreso_presentaciones-$salida_presentaciones;
-				if($existencia<=$minima){
-					$estado="Comprar!";
-					$st_bg="bg-danger";
+				
+				// Validar valores NULL y evitar división por cero
+				$ingreso_presentaciones = $ingreso_presentaciones ?: 0;
+				$salida_unidades = $salida_unidades ?: 0;
+				$bajas_manuales = $bajas_manuales ?: 0;
+				$up = $up > 0 ? $up : 1; // Evitar división por cero
+				
+				$salida_presentaciones = ($salida_unidades + $bajas_manuales) / $up;
+				$minima = $rOp["MINIMA"] ?: 0;
+				$existencia = $ingreso_presentaciones - $salida_presentaciones;
+				
+				if($existencia <= $minima){
+					$estado = "Comprar!";
+					$st_bg = "bg-danger";
 					$gf->dataIn("UPDATE ingredientes SET ALERTA=1 WHERE ID_INGREDIENTE='$id_ing'");
 				}else{
-					$estado="Ok";
-					$st_bg="bg-success";
+					$estado = "Ok";
+					$st_bg = "bg-success";
 				}
-				$btn_del=$gc->button("btn-danger","goErase('inventario','ID_REL','$id_rel','latrei_$id_rel',1)","fa fa-remove","Borrar",false);
 			
 				echo $gf->utf8("<tr id='latrei_$id_rel'>
 									<td>$nombre</td>
 									<td>$descripcion</td>
 									<td>$up $uma</td>
-									<td>".number_format($ingreso_presentaciones,0)."</td>
+									<td>".number_format($ingreso_presentaciones,1)."</td>
+									<td>".number_format($salida_unidades,1)." $uma</td>
+									<td>".number_format($bajas_manuales,1)." $uma</td>
 									<td>".number_format($salida_presentaciones,2)."</td>
-									<td>".number_format($existencia,1)."</td>
-									<td class='$st_bg'>".number_format($existencia,1)."</td>
+									<td><strong>".number_format($existencia,2)."</strong></td>
+									<td class='$st_bg'><strong>$estado</strong></td>
 								</tr>");
 			}
 		echo $gf->utf8("
-			</ul>
+			</tbody>
+			</table>
 			</div>
 		</div>");
 		

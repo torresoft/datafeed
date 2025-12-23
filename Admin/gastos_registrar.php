@@ -49,6 +49,8 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 		if($search!=""){
 			$siri=trim($search);
 			$no_result="No hay registros con $siri";
+		}else{
+			$no_result="No hay registros de gastos";
 		}
 		
 		$gettabla = $dataTables->armaTablaPaginate($tabla,"1",$rigu[1],$rigu[1],$rigu[2],$filterKey,$filterVal,$sender,array(),$extrafn,10,$page,$search,"ver",$no_result,array("VALOR"));
