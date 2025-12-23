@@ -42,40 +42,48 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 			$_SESSION["restservice"]=0;
 		}
 		
+		// Vista de tabla para pedidos abiertos
+		echo $gf->utf8("
+		<div class='row'>
+			<div class='col-md-12'>
+				<div class='box box-primary'>
+					<div class='box-header with-border'>
+						<h3 class='box-title'>Pedidos Abiertos</h3>
+						<div class='box-tools pull-right'>
+							<div class='input-group input-group-sm' style='width: 250px;'>
+								<input type='text' id='searchPedidos' class='form-control pull-right' placeholder='Buscar pedido...'>
+								<div class='input-group-btn'>
+									<button type='button' class='btn btn-default'><i class='fa fa-search'></i></button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class='box-body table-responsive no-padding'>
+						<table class='table table-hover table-striped' id='tablaPedidos'>
+							<thead>
+								<tr>
+									<th>Pedido</th>
+									<th>Mesa/Tipo</th>
+									<th>Mesero</th>
+									<th>Direcci&oacute;n</th>
+									<th>Total</th>
+									<th>Estado</th>
+									<th>Pago</th>
+									<th>Hora Chef</th>
+									<th>Productos</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody id='bodyPedidos'>
+		");
 
-		$resGrupos=$gf->dataSet("SELECT ID_GRUPO, NOMBRE, COLOR FROM mesas_grupos WHERE ID_SITIO=:sitio",array(":sitio"=>$_SESSION["restbus"]));
-
-		if(count($resGrupos)>1){
-			echo $gf->utf8("<div class='row'><div class='col-md-12 flexbox'>");
-			echo $gf->utf8("<button data-filter='all' class='btn btn-default btn-md btnfiltershome'>TODO</button>");
-			foreach($resGrupos as $grup){
-				$idgr=$grup["ID_GRUPO"];
-				$nombregr=$grup["NOMBRE"];
-				echo $gf->utf8("<button data-filter='.grupi_$idgr' class='btn btn-default btn-md btnfiltershome'>$nombregr</button>");
-			}
-			echo $gf->utf8("</div></div><hr />");
-		}
-		echo $gf->utf8("<div class='row'><div class='col-md-12 flexbox'>");
-		$resultInt = $gf->dataSet("SELECT M.ID_MESA, M.NOMBRE, M.TIPO, P.ID_PEDIDO, P.DIRECCION, P.CHEF, P.CAJA, U.NOMBRES AS TENDER, P.DENOM, P.PAGADO, SUM(SP.PRECIO * SP.CANTIDAD) AS TOTAL FROM mesas AS M RIGHT JOIN pedidos AS P ON (M.ID_MESA=P.ID_MESA) JOIN usuarios U ON U.ID_USUARIO=P.ID_TENDER JOIN sillas S ON S.ID_PEDIDO=P.ID_PEDIDO JOIN sillas_platos SP ON SP.ID_SILLA=S.ID_SILLA WHERE P.ID_SERVICIO='{$_SESSION["restservice"]}' AND P.CHEF<>'0000-00-00 00:00:00' AND P.CIERRE='0000-00-00 00:00:00' AND P.PAGO='0' GROUP BY P.ID_PEDIDO ORDER BY M.ID_MESA, P.ID_PEDIDO");
+		$resultInt = $gf->dataSet("SELECT M.ID_MESA, M.NOMBRE, M.TIPO, P.ID_PEDIDO, P.DIRECCION, P.CHEF, P.CAJA, U.NOMBRES AS TENDER, P.DENOM, P.PAGADO, SUM(SP.PRECIO * SP.CANTIDAD) AS TOTAL, SUM(SP.CANTIDAD) AS NUM_PRODUCTOS, P.APERTURA AS FECHA FROM mesas AS M RIGHT JOIN pedidos AS P ON (M.ID_MESA=P.ID_MESA) JOIN usuarios U ON U.ID_USUARIO=P.ID_TENDER JOIN sillas S ON S.ID_PEDIDO=P.ID_PEDIDO JOIN sillas_platos SP ON SP.ID_SILLA=S.ID_SILLA WHERE P.ID_SERVICIO='{$_SESSION["restservice"]}' AND P.CHEF<>'0000-00-00 00:00:00' AND P.CIERRE='0000-00-00 00:00:00' AND P.PAGO='0' GROUP BY P.ID_PEDIDO ORDER BY P.ID_PEDIDO DESC");
 		
 		if(count($resultInt)>0){
 			foreach($resultInt as $rowInt){
-				$acumbase=0;
-				$acumprice=0;
-				$acumimp=0;
 				$id_mesa=$rowInt["ID_MESA"];
 				$nombre=$rowInt["NOMBRE"];
 				$m_tipo=$rowInt["TIPO"];
-				$tipo=$rowInt["TIPO"];
-				$perc=100;
-				$dispatch=1;
-				$direccion=$rowInt["DIRECCION"];
-				if(strlen($direccion)>24){
-					$direccion_tin=substr($direccion,0,24)."...";
-				}else{
-					$direccion_tin=$direccion;
-				}
-				
 				$id_pedido=$rowInt["ID_PEDIDO"];
 				$caja=$rowInt["CAJA"];
 				$chef=$rowInt["CHEF"];
@@ -83,140 +91,109 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 				$denom=$rowInt["DENOM"];
 				$payd=$rowInt["PAGADO"];
 				$total=$rowInt["TOTAL"];
-				if($payd==1){
-					$pagado="PAGO";
-				}else{
-					$pagado="DEBE";
-				}
-				if($m_tipo=="D"){
-					$camprecio="PRECIO_DOM";
-				}else{
-					$camprecio="PRECIO";
-				}
-				echo $gf->utf8("<input type='hidden' id='boxviewbox' />");
-				$nsi=0;
-				$inisill=0;
-	
-				$icon="fa-hourglass-2";
-				$op=1;
-				$classd='bg-red';
-				if($chef!="0000-00-00 00:00:00"){
-					$icon="fa-fire";
-					$classd="bg-orange";
+				$direccion=$rowInt["DIRECCION"];
+				$num_productos=$rowInt["NUM_PRODUCTOS"];
+				
+				// Determinar estado
+				$estado_class = 'label-danger';
+				$estado_texto = 'Pendiente';
+				if($chef!="0000-00-00 00:00:00" && $caja=="0000-00-00 00:00:00"){
+					$estado_class = 'label-warning';
+					$estado_texto = 'En Cocina';
 				}
 				if($caja!="0000-00-00 00:00:00"){
-					$icon="fa-dollar";
-					$classd="bg-yellow";
-				}
-
-				$progress="
-				<div class='progress'>
-					<div class='progress-bar' id='mesa_progress_$id_mesa' style='width: 100%;'></div>
-					</div>";
-				$onclik="onclick=\"cargaHTMLvars('contenidos','$sender?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido')\" lnk-tsf='#cobrar-pedido-$id_pedido' lnk-cont='contenidos'";
-				if($dispatch==1){
-					$moto="<i class='fa fa-motorcycle' style='color:black;'></i>";
-				}else{
-					$moto="";
+					$estado_class = 'label-info';
+					$estado_texto = 'En Caja';
 				}
 				
-				if($tipo=="D"){
+				// Determinar pago
+				$pago_class = $payd==1 ? 'label-success' : 'label-danger';
+				$pago_texto = $payd==1 ? 'PAGADO' : 'DEBE';
 				
-					$elicon="<i class='fa fa-motorcycle' id='mesa_icon_$id_mesa'></i>";
-					$dv="D:$denom $pagado";
-				}else{
-		
-					$mesan=str_replace("MESA ","",$nombre);
-					$elicon="<i class='fa fa-qrcode' id='mesa_icon_$id_mesa'></i>";
-					$dv="";
+				// Tipo de mesa/pedido
+				$tipo_icon = '';
+				$tipo_texto = $nombre;
+				if($m_tipo=="D"){
+					$tipo_icon = "<i class='fa fa-motorcycle'></i> ";
+					$tipo_texto = "Domicilio: $denom";
 				}
 				
+				// Formatear horas
+				$hora_chef = $chef!="0000-00-00 00:00:00" ? date("H:i", strtotime($chef)) : '-';
 				
 				echo $gf->utf8("
-					
-					
-					<div class='col-md-4 col-sm-6 col-xs-12 lasmesas data-filtrable' id='tbl_$id_mesa' idm='$id_mesa' $onclik>
-						<div class='info-box $classd shadow link-cnv miniround material-ripple' id='infoboxa_$id_mesa'>
-						<span class='info-box-icon' style='font-size:1.1em;line-height: 15px;padding-top:25px;'>$elicon<br> $nombre</span>
-
-						<div class='info-box-content'>
-							<span class='info-box-text'>P.$id_pedido $nombre <small class='pull-right' style='font-size:11px;'>$tender</small></span>
-							<span class='info-box-number' id='mesa_sillas_$id_mesa'>$nsi <small class='pull-right'>$".number_format($total,0)."</small></span>
-
-							$progress
-							<span class='progress-description' id='pg_description_k_$id_mesa'>
-							<span class='ellip' title='$direccion'>$direccion_tin</span> <small class='pull-right'>$dv</small>
-							</span>
-						</div>
-						</div>
-					</div>
-					");
-				
-				
-				
-				
+				<tr class='pedido-row' data-pedido='$id_pedido' data-mesa='$nombre' data-mesero='$tender' data-direccion='$direccion'>
+					<td><strong>#$id_pedido</strong></td>
+					<td>$tipo_icon$tipo_texto</td>
+					<td>$tender</td>
+					<td><span class='ellip' title='$direccion'>" . (strlen($direccion)>30 ? substr($direccion,0,30)."..." : ($direccion ?: '-')) . "</span></td>
+					<td><strong>$" . number_format($total,0) . "</strong></td>
+					<td><span class='label $estado_class'>$estado_texto</span></td>
+					<td><span class='label $pago_class'>$pago_texto</span></td>
+					<td>$hora_chef</td>
+					<td><span class='badge bg-blue'>$num_productos</span></td>
+					<td>
+						<button class='btn btn-sm btn-primary' lnk-tsf='#open-pedido-$id_pedido' lnk-cont='contenidos' onclick=\"cargaHTMLvars('contenidos','$sender?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido')\" title='Abrir pedido'>
+							<i class='fa fa-edit'></i>
+						</button>
+					</td>
+				</tr>
+				");
 			}
-			echo $gf->utf8("</div></div>");
 		}else{
-			$rsMesa=$gf->dataSet("SELECT M.ID_MESA, P.ID_PEDIDO, P.CHEF FROM mesas M LEFT JOIN pedidos P ON M.ID_MESA=P.ID_MESA AND P.ID_SERVICIO='{$_SESSION["restservice"]}' AND P.CIERRE='0000-00-00 00:00:00' WHERE M.ID_SITIO='{$_SESSION["restbus"]}' AND M.TIPO<>'D'");
-			$mesas_libres=0;
-			$mesas_chef=0;
-			$mesas_activas=0;
-			if(count($rsMesa)>0){
-				foreach($rsMesa as $rwMesa){
-					$id_mesa=$rwMesa["ID_MESA"];
-					$pedido=$rwMesa["ID_PEDIDO"];
-					$chef=$rwMesa["CHEF"];
-					if($pedido>0){
-						if($chef=="0000-00-00 00:00:00"){
-							$mesas_activas++;
-						}else{
-							$mesas_chef++;
-						}
-					}else{
-						$mesas_libres++;
-					}
-				}
-			}
 			echo $gf->utf8("
-			<input type='hidden' id='boxviewbox' />
-			<div class='col-md-4'>
-			  <div class='box box-widget widget-user'>
-				<div class='widget-user-header bg-aqua-active'>
-				  <h3 class='widget-user-username'>{$_SESSION["restbusname"]}</h3>
-				  <h5 class='widget-user-desc'>Estado del servicio</h5>
-				</div>
-				<div class='widget-user-image'>
-				  <img class='img-circle' src='{$_SESSION["restbuslogo"]}' alt='User Avatar'>
-				</div>
-				<div class='box-footer'>
-				  <div class='row'>
-					<div class='col-sm-4 border-right'>
-					  <div class='description-block'>
-						<h5 class='description-header'>$mesas_activas</h5>
-						<span class='description-text'>EN PEDIDO</span>
-					  </div>
-					</div>
-					<div class='col-sm-4 border-right'>
-					  <div class='description-block'>
-						<h5 class='description-header'>$mesas_chef</h5>
-						<span class='description-text'>EN COCINA</span>
-					  </div>
-					</div>
-					<div class='col-sm-4 border-right'>
-					  <div class='description-block'>
-						<h5 class='description-header'>$mesas_libres</h5>
-						<span class='description-text'>LIBRES</span>
-					  </div>
-					</div>
-				  </div>
-				</div>
-			  </div>
-			</div>
-			
-			
+				<tr>
+					<td colspan='10' class='text-center'>
+						<div class='alert alert-info'>
+							<i class='fa fa-info-circle'></i> No hay pedidos abiertos en este momento
+						</div>
+					</td>
+				</tr>
 			");
 		}
+		
+		echo $gf->utf8("
+							</tbody>
+						</table>
+					</div>
+					<div class='box-footer clearfix'>
+						<div class='pull-left'>
+							<strong>Total de pedidos: <span id='totalPedidos'>" . count($resultInt) . "</span></strong>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+		$(document).ready(function(){
+			// Búsqueda en tiempo real
+			$('#searchPedidos').on('keyup', function(){
+				var searchText = $(this).val().toLowerCase();
+				var count = 0;
+				
+				$('#bodyPedidos tr.pedido-row').each(function(){
+					var pedido = $(this).data('pedido').toString();
+					var mesa = $(this).data('mesa').toLowerCase();
+					var mesero = $(this).data('mesero').toLowerCase();
+					var direccion = $(this).data('direccion').toLowerCase();
+					
+					var searchIn = pedido + ' ' + mesa + ' ' + mesero + ' ' + direccion;
+					
+					if(searchIn.indexOf(searchText) > -1){
+						$(this).show();
+						count++;
+					}else{
+						$(this).hide();
+					}
+				});
+				
+				$('#totalPedidos').text(count);
+			});
+		});
+		</script>
+		");
+		
 
 
 
@@ -232,215 +209,153 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 			echo $gf->utf8("Hola!, no se encontr&oacute; un servicio activo, contacta al administrador para abrir el servicio de hoy");
 		}
 		
+		// Vista de tabla para pedidos en proceso
+		echo $gf->utf8("
+		<div class='row'>
+			<div class='col-md-12'>
+				<div class='box box-warning'>
+					<div class='box-header with-border'>
+						<h3 class='box-title'>Pedidos en Proceso</h3>
+						<div class='box-tools pull-right'>
+							<div class='input-group input-group-sm' style='width: 250px;'>
+								<input type='text' id='searchPedidosProceso' class='form-control pull-right' placeholder='Buscar pedido...'>
+								<div class='input-group-btn'>
+									<button type='button' class='btn btn-default'><i class='fa fa-search'></i></button>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class='box-body table-responsive no-padding'>
+						<table class='table table-hover table-striped' id='tablaPedidosProceso'>
+							<thead>
+								<tr>
+									<th>Pedido</th>
+									<th>Mesa/Tipo</th>
+									<th>Mesero</th>
+									<th>Direcci&oacute;n</th>
+									<th>Total</th>
+									<th>Estado</th>
+									<th>Pago</th>
+									<th>Hora Chef</th>
+									<th>Productos</th>
+									<th>Acciones</th>
+								</tr>
+							</thead>
+							<tbody id='bodyPedidosProceso'>
+		");
 
-		$resGrupos=$gf->dataSet("SELECT ID_GRUPO, NOMBRE, COLOR FROM mesas_grupos WHERE ID_SITIO=:sitio",array(":sitio"=>$_SESSION["restbus"]));
-
-		if(count($resGrupos)>1){
-			echo $gf->utf8("<div class='row'><div class='col-md-12 flexbox'>");
-			echo $gf->utf8("<button data-filter='all' class='btn btn-default btn-md btnfiltershome'>TODO</button>");
-			foreach($resGrupos as $grup){
-				$idgr=$grup["ID_GRUPO"];
-				$nombregr=$grup["NOMBRE"];
-				echo $gf->utf8("<button data-filter='.grupi_$idgr' class='btn btn-default btn-md btnfiltershome'>$nombregr</button>");
-			}
-			echo $gf->utf8("</div></div><hr />");
-		}
-		echo $gf->utf8("<div class='row'><div class='col-md-12 flexbox'>");
-		$resultInt = $gf->dataSet("SELECT M.ID_MESA, M.NOMBRE, M.TIPO, P.ID_PEDIDO, P.DIRECCION, P.CHEF, P.CAJA, U.NOMBRES AS TENDER, P.DENOM, P.PAGADO FROM mesas AS M JOIN pedidos AS P ON (M.ID_MESA=P.ID_MESA AND P.CHEF<>'0000-00-00 00:00:00' AND P.CIERRE='0000-00-00 00:00:00' AND P.PAGO='0') JOIN usuarios U ON U.ID_USUARIO=P.ID_TENDER WHERE M.ID_SITIO='".$_SESSION["restbus"]."' AND P.ID_SERVICIO='{$_SESSION["restservice"]}'  GROUP BY P.ID_PEDIDO ORDER BY M.ID_MESA, P.ID_PEDIDO");
+		$resultInt = $gf->dataSet("SELECT M.ID_MESA, M.NOMBRE, M.TIPO, P.ID_PEDIDO, P.DIRECCION, P.CHEF, P.CAJA, U.NOMBRES AS TENDER, P.DENOM, P.PAGADO, SUM(SP.PRECIO * SP.CANTIDAD) AS TOTAL, SUM(SP.CANTIDAD) AS NUM_PRODUCTOS FROM mesas AS M JOIN pedidos AS P ON (M.ID_MESA=P.ID_MESA AND P.CHEF<>'0000-00-00 00:00:00' AND P.CIERRE='0000-00-00 00:00:00' AND P.PAGO='0') JOIN usuarios U ON U.ID_USUARIO=P.ID_TENDER JOIN sillas S ON S.ID_PEDIDO=P.ID_PEDIDO JOIN sillas_platos SP ON SP.ID_SILLA=S.ID_SILLA WHERE M.ID_SITIO='".$_SESSION["restbus"]."' AND P.ID_SERVICIO='{$_SESSION["restservice"]}' GROUP BY P.ID_PEDIDO ORDER BY P.ID_PEDIDO DESC");
 		
 		if(count($resultInt)>0){
 			foreach($resultInt as $rowInt){
-				$acumbase=0;
-				$acumprice=0;
-				$acumimp=0;
 				$id_mesa=$rowInt["ID_MESA"];
 				$nombre=$rowInt["NOMBRE"];
 				$m_tipo=$rowInt["TIPO"];
-				$tipo=$rowInt["TIPO"];
-				$perc=100;
-				$dispatch=1;
-				$direccion=$rowInt["DIRECCION"];
 				$id_pedido=$rowInt["ID_PEDIDO"];
 				$caja=$rowInt["CAJA"];
 				$chef=$rowInt["CHEF"];
 				$tender=$rowInt["TENDER"];
 				$denom=$rowInt["DENOM"];
 				$payd=$rowInt["PAGADO"];
-				if($payd==1){
-					$pagado="PAGO";
-				}else{
-					$pagado="DEBE";
-				}
-				if($m_tipo=="D"){
-					$camprecio="PRECIO_DOM";
-				}else{
-					$camprecio="PRECIO";
-				}
-				echo $gf->utf8("<input type='hidden' id='boxviewbox' />");
-				$nsi=0;
-				$inisill=0;
-				$resultChairs = $gf->dataSet("SELECT SP.ID_ITEM, S.ID_SILLA, S.OBSERVACION, SP.CANTIDAD, SP.LISTO, P.NOMBRE, P.DESCRIPCION, P.$camprecio AS PRECIO, SUM(P.$camprecio/(1+(IM.PORCENTAJE/100))) AS IMPUESTO FROM sillas AS S JOIN sillas_platos AS SP ON (S.ID_SILLA=SP.ID_SILLA) JOIN platos AS P ON (SP.ID_PLATO=P.ID_PLATO) LEFT JOIN impuestos IM ON IM.ID_IMPUESTO=P.ID_IMPUESTO WHERE S.ID_PEDIDO='$id_pedido' GROUP BY SP.ID_ITEM ORDER BY S.ID_SILLA");
-				if(count($resultChairs)>0){
-					
-					$bklass="ui-semiwhite";
-					foreach($resultChairs as $rwChair){
-						
-						$id_item=$rwChair["ID_ITEM"];
-						$id_silla=$rwChair["ID_SILLA"];
-						$observacion=$rwChair["OBSERVACION"];
-						$cantidad=$rwChair["CANTIDAD"];
-						$nombre_plato=$rwChair["NOMBRE"];
-						$descripcion=$rwChair["DESCRIPCION"];
-						$listo=$rwChair["LISTO"];
-						$precio=$rwChair["PRECIO"];
-						$impuestos=$rwChair["IMPUESTO"];
-						if($impuestos=="") $impuestos=0;
-						
-						if($_SESSION["restbusstyle"]==1){
-							$precio_base=$precio-$impuestos;
-						}else{
-							$precio_base=$precio;
-						}
-						$acumbase+=($precio_base*$cantidad);
-						$acumimp+=($impuestos*$cantidad);
-						$precio_total=$precio_base+$impuestos;
-						$acumprice+=($precio_total*$cantidad);
-						if($id_silla!=$inisill){
-							$nsi++;
-							$inisill=$id_silla;
-						}
-
-						$inisill=$id_silla;
-					}
-					$sillas=$nsi;
-					
+				$total=$rowInt["TOTAL"];
+				$direccion=$rowInt["DIRECCION"];
+				$num_productos=$rowInt["NUM_PRODUCTOS"];
 				
-					$icon="fa-hourglass-2";
-					$op=1;
-					$classd='bg-red';
-					if($chef!="0000-00-00 00:00:00"){
-						$icon="fa-fire";
-						$classd="bg-orange";
-					}
-					if($caja!="0000-00-00 00:00:00"){
-						$icon="fa-dollar";
-						$classd="bg-yellow";
-					}
-					if($tipo!="D"){
-						$chair="$sillas sillas";
-						$avante="$perc% Avance del pedido";
-					}else{
-						$chair="";
-						$avante="";
-					}
-					
-					$progress="
-					<div class='progress'>
-						<div class='progress-bar' id='mesa_progress_$id_mesa' style='width: 100%;'></div>
-					  </div>";
-					$onclik="onclick=\"cargaHTMLvars('contenidos','mviews.php?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido')\" lnk-tsf='#proceso-pedido-$id_pedido' lnk-cont='contenidos'";
-					if($dispatch==1){
-						$moto="<i class='fa fa-motorcycle' style='color:black;'></i>";
-					}else{
-						$moto="";
-					}
-					
-					if($tipo=="D"){
-					
-						$elicon="<i class='fa fa-motorcycle' id='mesa_icon_$id_mesa'></i>";
-						$dv="D:$denom $pagado";
-					}else{
-			
-						$mesan=str_replace("MESA ","",$nombre);
-						$elicon="<i class='fa fa-qrcode' id='mesa_icon_$id_mesa'></i>";
-						$dv="";
-					}
-					
-					
-					echo $gf->utf8("
-						
-						
-						<div class='col-md-4 col-sm-6 col-xs-12 lasmesas data-filtrable' id='tbl_$id_mesa' idm='$id_mesa' $onclik>
-						  <div class='info-box $classd shadow link-cnv miniround material-ripple' id='infoboxa_$id_mesa'>
-							<span class='info-box-icon' style='font-size:1.1em;line-height: 15px;padding-top:25px;'>$elicon<br>$nombre</span>
-							<div class='info-box-content'>
-							  <span class='info-box-text'>P.$id_pedido $nombre <small class='pull-right' style='font-size:11px;'>$tender</small></span>
-							  <span class='info-box-number' id='mesa_sillas_$id_mesa'>$nsi <small class='pull-right'>$".number_format($acumprice,0)."</small></span>
-
-							 $progress
-							  <span class='progress-description' id='pg_description_k_$id_mesa'>
-								$direccion <small class='pull-right'>$dv</small>
-							  </span>
-							</div>
-						  </div>
-						</div>
-						");
-					
-					
-					
+				// Determinar estado
+				$estado_class = 'label-warning';
+				$estado_texto = 'En Cocina';
+				if($caja!="0000-00-00 00:00:00"){
+					$estado_class = 'label-info';
+					$estado_texto = 'En Caja';
 				}
+				
+				// Determinar pago
+				$pago_class = $payd==1 ? 'label-success' : 'label-danger';
+				$pago_texto = $payd==1 ? 'PAGADO' : 'DEBE';
+				
+				// Tipo de mesa/pedido
+				$tipo_icon = '';
+				$tipo_texto = $nombre;
+				if($m_tipo=="D"){
+					$tipo_icon = "<i class='fa fa-motorcycle'></i> ";
+					$tipo_texto = "Domicilio: $denom";
+				}
+				
+				// Formatear hora
+				$hora_chef = $chef!="0000-00-00 00:00:00" ? date("H:i", strtotime($chef)) : '-';
+				
+				echo $gf->utf8("
+				<tr class='pedido-row' data-pedido='$id_pedido' data-mesa='$nombre' data-mesero='$tender' data-direccion='$direccion'>
+					<td><strong>#$id_pedido</strong></td>
+					<td>$tipo_icon$tipo_texto</td>
+					<td>$tender</td>
+					<td><span class='ellip' title='$direccion'>" . (strlen($direccion)>30 ? substr($direccion,0,30)."..." : ($direccion ?: '-')) . "</span></td>
+					<td><strong>$" . number_format($total,0) . "</strong></td>
+					<td><span class='label $estado_class'>$estado_texto</span></td>
+					<td><span class='label $pago_class'>$pago_texto</span></td>
+					<td>$hora_chef</td>
+					<td><span class='badge bg-blue'>$num_productos</span></td>
+					<td>
+						<button class='btn btn-sm btn-warning' onclick=\"cargaHTMLvars('contenidos','mviews.php?flag=opentable&id_mesa=$id_mesa&id_pedido=$id_pedido')\" title='Abrir pedido'>
+							<i class='fa fa-edit'></i>
+						</button>
+					</td>
+				</tr>
+				");
 			}
-			echo $gf->utf8("</div></div>");
 		}else{
-			$rsMesa=$gf->dataSet("SELECT M.ID_MESA, P.ID_PEDIDO, P.CHEF FROM mesas M LEFT JOIN pedidos P ON M.ID_MESA=P.ID_MESA AND P.ID_SERVICIO='{$_SESSION["restservice"]}' AND P.CIERRE='0000-00-00 00:00:00' WHERE M.ID_SITIO='{$_SESSION["restbus"]}'");
-			$mesas_libres=0;
-			$mesas_chef=0;
-			$mesas_activas=0;
-			if(count($rsMesa)>0){
-				foreach($rsMesa as $rwMesa){
-					$id_mesa=$rwMesa["ID_MESA"];
-					$pedido=$rwMesa["ID_PEDIDO"];
-					$chef=$rwMesa["CHEF"];
-					if($pedido>0){
-						if($chef=="0000-00-00 00:00:00"){
-							$mesas_activas++;
-						}else{
-							$mesas_chef++;
-						}
-					}else{
-						$mesas_libres++;
-					}
-				}
-			}
 			echo $gf->utf8("
-			<input type='hidden' id='boxviewbox' />
-			<div class='col-md-4'>
-			  <div class='box box-widget widget-user'>
-				<div class='widget-user-header bg-aqua-active'>
-				  <h3 class='widget-user-username'>{$_SESSION["restbusname"]}</h3>
-				  <h5 class='widget-user-desc'>Estado del servicio</h5>
-				</div>
-				<div class='widget-user-image'>
-				  <img class='img-circle' src='{$_SESSION["restbuslogo"]}' alt='User Avatar'>
-				</div>
-				<div class='box-footer'>
-				  <div class='row'>
-					<div class='col-sm-4 border-right'>
-					  <div class='description-block'>
-						<h5 class='description-header'>$mesas_activas</h5>
-						<span class='description-text'>EN PEDIDO</span>
-					  </div>
-					</div>
-					<div class='col-sm-4 border-right'>
-					  <div class='description-block'>
-						<h5 class='description-header'>$mesas_chef</h5>
-						<span class='description-text'>EN COCINA</span>
-					  </div>
-					</div>
-					<div class='col-sm-4 border-right'>
-					  <div class='description-block'>
-						<h5 class='description-header'>$mesas_libres</h5>
-						<span class='description-text'>LIBRES</span>
-					  </div>
-					</div>
-				  </div>
-				</div>
-			  </div>
-			</div>
-			
-			
+				<tr>
+					<td colspan='10' class='text-center'>
+						<div class='alert alert-info'>
+							<i class='fa fa-info-circle'></i> No hay pedidos en proceso en este momento
+						</div>
+					</td>
+				</tr>
 			");
 		}
+		
+		echo $gf->utf8("
+							</tbody>
+						</table>
+					</div>
+					<div class='box-footer clearfix'>
+						<div class='pull-left'>
+							<strong>Total de pedidos: <span id='totalPedidosProceso'>" . count($resultInt) . "</span></strong>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script>
+		$(document).ready(function(){
+			// Búsqueda en tiempo real
+			$('#searchPedidosProceso').on('keyup', function(){
+				var searchText = $(this).val().toLowerCase();
+				var count = 0;
+				
+				$('#bodyPedidosProceso tr.pedido-row').each(function(){
+					var pedido = $(this).data('pedido').toString();
+					var mesa = $(this).data('mesa').toLowerCase();
+					var mesero = $(this).data('mesero').toLowerCase();
+					var direccion = $(this).data('direccion').toLowerCase();
+					
+					var searchIn = pedido + ' ' + mesa + ' ' + mesero + ' ' + direccion;
+					
+					if(searchIn.indexOf(searchText) > -1){
+						$(this).show();
+						count++;
+					}else{
+						$(this).hide();
+					}
+				});
+				
+				$('#totalPedidosProceso').text(count);
+			});
+		});
+		</script>
+		");
 
 
 	}elseif($actividad=="opentable"){

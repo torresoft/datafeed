@@ -3,7 +3,7 @@
 	$userdb="root";
 	$passdb="KernelPass530+";
 	$site_dbase="datafeed2021";
-	$node_ip = "192.168.1.19";
+	$node_ip = "192.168.101.86";
 	$protocol = "http";
 	$node_port = "3000";
 	define("SITE_HOST",$hostdb);
