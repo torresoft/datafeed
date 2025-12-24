@@ -143,16 +143,17 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
 		
 		$noti_nmesas=count($gf->dataSet("SELECT ID_MESA FROM mesas WHERE ID_SITIO='{$_SESSION["restbus"]}'"));
 		$noti_nordenes=count($gf->dataSet("SELECT ID_PEDIDO FROM pedidos WHERE ID_SERVICIO='{$_SESSION["restservice"]}'"));
-		$noti_promedio=$gf->dataSet("SELECT AVG(TIMESTAMPDIFF(MINUTE,P.APERTURA,PL.FENTREGA)) AS PROME  FROM pedidos P JOIN sillas S ON S.ID_PEDIDO=P.ID_PEDIDO JOIN sillas_platos PL ON PL.ID_SILLA=S.ID_SILLA WHERE P.ID_SERVICIO='{$_SESSION["restservice"]}'");
-		if(count($noti_promedio)>0){
-			// $noti_promedio_entrega=$noti_promedio[0]["PROME"];
-			// if($noti_promedio_entrega<60){
-			// 	$noti_promedio_entrega=number_format($noti_promedio_entrega,0)."Min";
-			// }elseif($noti_promedio_entrega<(60*24)){
-			// 	$noti_promedio_entrega=number_format(($noti_promedio_entrega/60))."Hr";
-			// }else{
-			// 	$noti_promedio_entrega=number_format(($noti_promedio_entrega/60/24))."D&iacute;as";
-			// }
+		$noti_promedio=$gf->dataSet("SELECT AVG(TIMESTAMPDIFF(MINUTE,P.APERTURA,P.CHEF)) AS PROME FROM pedidos P WHERE P.ID_SERVICIO='{$_SESSION["restservice"]}' AND P.CHEF<>'0000-00-00 00:00:00'");
+		$noti_promedio_entrega="0 Min";
+		if(count($noti_promedio)>0 && $noti_promedio[0]["PROME"]!==null){
+			$prom_min=$noti_promedio[0]["PROME"];
+			if($prom_min<60){
+				$noti_promedio_entrega=number_format($prom_min,0)." Min";
+			}elseif($prom_min<(60*24)){
+				$noti_promedio_entrega=number_format(($prom_min/60),1)." Hr";
+			}else{
+				$noti_promedio_entrega=number_format(($prom_min/60/24),1)." D&iacute;as";
+			}
 		}
 		
 		$noti_mesas_activas=count($gf->dataSet("SELECT ID_MESA FROM mesas WHERE ID_MESA IN(SELECT ID_MESA FROM pedidos WHERE ID_SERVICIO='{$_SESSION["restservice"]}' AND CAJA='0000-00-00 00:00:00' AND CIERRE='0000-00-00 00:00:00') AND ID_SITIO='{$_SESSION["restbus"]}'"));
@@ -957,62 +958,57 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
 			<?php
 			}
 			?>
+      <style>
+      .kpi-card{border-radius:16px;padding:20px;color:#fff;position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.15);transition:all 0.3s ease;margin-bottom:15px}
+      .kpi-card:hover{transform:translateY(-5px);box-shadow:0 8px 25px rgba(0,0,0,0.2)}
+      .kpi-card .kpi-icon{position:absolute;right:15px;top:50%;transform:translateY(-50%);font-size:50px;opacity:0.25}
+      .kpi-card .kpi-value{font-size:36px;font-weight:800;margin:0;line-height:1.2}
+      .kpi-card .kpi-label{font-size:14px;opacity:0.9;margin-top:5px;font-weight:500}
+      .kpi-card .kpi-trend{font-size:12px;margin-top:10px;display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,0.2);padding:4px 10px;border-radius:20px}
+      .kpi-aqua{background:linear-gradient(135deg,#00b4db,#0083b0)}
+      .kpi-green{background:linear-gradient(135deg,#11998e,#38ef7d)}
+      .kpi-yellow{background:linear-gradient(135deg,#f2994a,#f2c94c)}
+      .kpi-red{background:linear-gradient(135deg,#eb3349,#f45c43)}
+      .chart-box{border-radius:12px;box-shadow:0 2px 10px rgba(0,0,0,0.08);border:none;overflow:hidden;background:#fff}
+      .chart-box .box-header{background:#fff;color:#333;border-bottom:1px solid #eee;padding:15px 20px}
+      .chart-box .box-header .box-title{color:#333;font-weight:700;font-size:16px}
+      .chart-box .box-header .box-title i{color:#ff9800;margin-right:8px}
+      .chart-box .box-header .btn-box-tool{color:#999}
+      .chart-box .box-body{padding:20px}
+      </style>
       <div class="row">
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-aqua">
-            <div class="inner">
-              <h3><?php echo $gf->utf8($noti_nordenes)?></h3>
-
-              <p>Ordenes Hoy</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-android-restaurant"></i>
-            </div>
+        <div class="col-lg-3 col-sm-6 col-xs-12">
+          <div class="kpi-card kpi-aqua">
+            <i class="ion ion-android-restaurant kpi-icon"></i>
+            <h3 class="kpi-value"><?php echo $gf->utf8($noti_nordenes)?></h3>
+            <p class="kpi-label">Ordenes Hoy</p>
+            <span class="kpi-trend"><i class="fa fa-line-chart"></i> Servicio activo</span>
           </div>
         </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-green">
-            <div class="inner">
-              <h3><?php echo $gf->utf8($noti_ocupacion)?><sup style="font-size: 20px">%</sup></h3>
-              <p>Ocupaci&oacute;n</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-battery-low"></i>
-            </div>
+        <div class="col-lg-3 col-sm-6 col-xs-12">
+          <div class="kpi-card kpi-green">
+            <i class="ion ion-pie-graph kpi-icon"></i>
+            <h3 class="kpi-value"><?php echo $gf->utf8($noti_ocupacion)?><sup style="font-size:18px">%</sup></h3>
+            <p class="kpi-label">Ocupación</p>
+            <span class="kpi-trend"><i class="fa fa-users"></i> <?php echo $noti_mesas_activas?> mesas activas</span>
           </div>
         </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-yellow">
-            <div class="inner">
-              <h3><?php echo $gf->utf8($noti_nlibres)?></h3>
-
-              <p>Mesas Libres</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-radio-waves"></i>
-            </div>
+        <div class="col-lg-3 col-sm-6 col-xs-12">
+          <div class="kpi-card kpi-yellow">
+            <i class="ion ion-grid kpi-icon"></i>
+            <h3 class="kpi-value"><?php echo $gf->utf8($noti_nlibres)?></h3>
+            <p class="kpi-label">Mesas Libres</p>
+            <span class="kpi-trend"><i class="fa fa-check"></i> Disponibles</span>
           </div>
         </div>
-        <!-- ./col -->
-        <div class="col-lg-3 col-xs-6">
-          <!-- small box -->
-          <div class="small-box bg-red">
-            <div class="inner">
-              <h3><?php echo $gf->utf8($noti_promedio_entrega)?></h3>
-
-              <p>Promedio Demora</p>
-            </div>
-            <div class="icon">
-              <i class="ion ion-android-stopwatch"></i>
-            </div>
+        <div class="col-lg-3 col-sm-6 col-xs-12">
+          <div class="kpi-card kpi-red">
+            <i class="ion ion-android-stopwatch kpi-icon"></i>
+            <h3 class="kpi-value"><?php echo $gf->utf8($noti_promedio_entrega)?></h3>
+            <p class="kpi-label">Promedio Demora</p>
+            <span class="kpi-trend"><i class="fa fa-clock-o"></i> Tiempo respuesta</span>
           </div>
         </div>
-        <!-- ./col -->
       </div>
       <!-- /.row -->
       <!-- Main row -->
@@ -1023,14 +1019,13 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
 				?>
         <section class="col-lg-6 col-md-6">
 		
-           <div class="box box-danger">
+           <div class="box chart-box">
             <div class="box-header with-border">
-              <h3 class="box-title">Ventas &uacute;ltimos servicios</h3>
+              <h3 class="box-title"><i class="fa fa-line-chart"></i> Ventas &uacute;ltimos servicios</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
               </div>
             </div>
             <div class="box-body chart-responsive">
@@ -1043,14 +1038,13 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
 				}
 				?>
 				<section class="col-lg-6 col-md-6">
-					<div class="box box-info">
+					<div class="box chart-box box-info">
             <div class="box-header with-border">
-              <h3 class="box-title">Platos Estrella</h3>
+              <h3 class="box-title"><i class="fa fa-star"></i> Platos Estrella</h3>
 
               <div class="box-tools pull-right">
                 <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
                 </button>
-                <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
               </div>
             </div>
             <div class="box-body chart-responsive">
