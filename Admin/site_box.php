@@ -216,9 +216,10 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 				<div class='box box-warning'>
 					<div class='box-header with-border'>
 						<h3 class='box-title'>Pedidos en Proceso</h3>
-						<div class='box-tools pull-right'>
-							<div class='input-group input-group-sm' style='width: 250px;'>
-								<input type='text' id='searchPedidosProceso' class='form-control pull-right' placeholder='Buscar pedido...'>
+						<div class='box-tools pull-right' style='display:flex;align-items:center;gap:10px'>
+							<button class='btn btn-sm btn-warning' onclick=\"crearDomicilioRapido()\"><i class='fa fa-motorcycle'></i> Nuevo Domicilio</button>
+							<div class='input-group input-group-sm' style='width:200px'>
+								<input type='text' id='searchPedidosProceso' class='form-control' placeholder='Buscar pedido...'>
 								<div class='input-group-btn'>
 									<button type='button' class='btn btn-default'><i class='fa fa-search'></i></button>
 								</div>
@@ -323,6 +324,9 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 						<div class='pull-left'>
 							<strong>Total de pedidos: <span id='totalPedidosProceso'>" . count($resultInt) . "</span></strong>
 						</div>
+						<div class='pull-right'>
+							<button class='btn btn-warning' onclick=\"crearDomicilioRapido()\"><i class='fa fa-motorcycle'></i> Nuevo Domicilio</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -354,9 +358,58 @@ if(isset($_SESSION["restuname"]) && isset($_SESSION["restprofile"]) && ($_SESSIO
 				$('#totalPedidosProceso').text(count);
 			});
 		});
+		
+		function crearDomicilioRapido(){
+			$.ajax({
+				url: 'Admin/site_box.php?flag=crear_domicilio_rapido',
+				type: 'GET',
+				dataType: 'json',
+				success: function(resp){
+					if(resp.success){
+						loadMask('mviews.php?flag=opentable&id_mesa='+resp.id_mesa+'&id_pedido='+resp.id_pedido+'&t=D');
+					}else{
+						alert(resp.message || 'Error al crear domicilio');
+					}
+				},
+				error: function(){
+					alert('Error de conexión');
+				}
+			});
+		}
 		</script>
 		");
 
+
+	}elseif($actividad=="crear_domicilio_rapido"){
+		// Crear domicilio rápidamente usando la primera mesa de domicilio disponible
+		header('Content-Type: application/json');
+		
+		$curServ=$gf->dataSet("SELECT ID_SERVICIO FROM servicio WHERE ESTADO=0 AND ID_SITIO=:sitio",array(":sitio"=>$_SESSION["restbus"]));
+		if(count($curServ)==0){
+			echo json_encode(array('success'=>false, 'message'=>'No hay servicio activo'));
+			exit;
+		}
+		$_SESSION["restservice"]=$curServ[0]["ID_SERVICIO"];
+		
+		// Buscar primera mesa de domicilio
+		$mesaDom=$gf->dataSet("SELECT ID_MESA FROM mesas WHERE TIPO='D' AND ESTADO=1 AND ID_SITIO=:sitio ORDER BY ID_MESA LIMIT 1",array(":sitio"=>$_SESSION["restbus"]));
+		if(count($mesaDom)==0){
+			echo json_encode(array('success'=>false, 'message'=>'No hay mesas de domicilio configuradas'));
+			exit;
+		}
+		$id_mesa=$mesaDom[0]["ID_MESA"];
+		
+		// Crear el pedido
+		$id_pedido = $gf->dataInLast("INSERT INTO pedidos (ID_MESA, ID_SERVICIO, APERTURA, ID_TENDER) VALUES ('$id_mesa', '{$_SESSION["restservice"]}', NOW(), '{$_SESSION["restuiduser"]}')");
+		
+		// Crear silla por defecto
+		$gf->dataIn("INSERT INTO sillas (ID_PEDIDO, OBSERVACION) VALUES ('$id_pedido', '')");
+		
+		// Log
+		$gf->log($_SESSION["restbus"], $id_mesa, $id_pedido, "DOMICILIO RAPIDO CREADO", $_SESSION["restuiduser"]);
+		
+		echo json_encode(array('success'=>true, 'id_mesa'=>$id_mesa, 'id_pedido'=>$id_pedido));
+		exit;
 
 	}elseif($actividad=="opentable"){
 		$id_mesa=$gf->cleanVar($_GET["id_mesa"]);
