@@ -2,7 +2,7 @@
 	$hostdb="localhost";
 	$userdb="root";
 	$passdb="KernelPass530+";
-	$site_dbase="datafeed2021";
+	$site_dbase="datafeed2";
 	$node_ip = "192.168.1.19";
 	$protocol = "http";
 	$node_port = "3000";

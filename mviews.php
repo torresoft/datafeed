@@ -1,5 +1,5 @@
 ﻿<?php
-ini_set("display_errors",1);
+ini_set("display_errors",0);
 session_start();
 date_default_timezone_set("America/Bogota");
 	include_once("autoload.php");
@@ -1901,7 +1901,47 @@ date_default_timezone_set("America/Bogota");
 					}
 				
 					echo $gf->utf8("
-					<div class='row'><div class='col-xs-6'><input style='position:fixed;top:60px;left:15px;z-index:600;' type='text' placeholder='Buscar...' id='tr_pedidos_items' onkeyup=\"filtrarTr('tr_pedidos_items','flt_tr_items');validaBtnErase()\" /><button id='erasesearch' onclick=\"javascript:$('#tr_pedidos_items').val('');filtrarTr('tr_pedidos_items','flt_tr_items');$('#tr_pedidos_items').focus()\" class='btn btn-sm btn-warning' style='position:fixed;top:60px;left:180px;display:none;'><i class='fa fa-remove'></i></button>
+					<style>
+					.msb{position:relative;display:flex;gap:5px;padding:6px;background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%);border-radius:8px;box-shadow:0 2px 8px rgba(255,152,0,0.25);margin:8px 0 10px 0}
+					.msi{flex:1;padding:8px 10px;font-size:13px;border:none;border-radius:6px;background:#fff;box-shadow:inset 0 1px 2px rgba(0,0,0,0.06);min-width:0}
+					.msi:focus{outline:none;box-shadow:0 0 0 2px rgba(255,255,255,0.5)}
+					.msbtn{padding:8px 10px;border:none;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer;background:#fff;color:#e65100;transition:all 0.2s}
+					.mab{position:fixed;bottom:8px;left:5px;right:5px;z-index:600;display:flex;gap:6px}
+					.mabc{flex:1;height:48px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(255,152,0,0.3);display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;transition:all 0.2s}
+					.mabc:active{transform:scale(0.97)}
+					.mabx{width:48px;height:48px;border:none;border-radius:10px;font-size:16px;cursor:pointer;background:#fff;color:#e65100;border:2px solid #e65100;transition:all 0.2s}
+					.mabx:active{transform:scale(0.97)}
+					.mcp{border:none!important;border-radius:8px!important;overflow:hidden;margin:0 0 3px 0!important;box-shadow:0 1px 4px rgba(0,0,0,0.06)!important}
+					.mch{background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%)!important;border:none!important;padding:10px 12px!important}
+					.mct{color:#fff!important;font-size:14px!important;font-weight:700!important;margin:0!important;text-shadow:0 1px 2px rgba(0,0,0,0.2)}
+					.mct i{font-size:14px;opacity:0.9}
+					.mir{border:none!important;border-bottom:1px solid #f0f0f0!important}
+					.mir:active{background:#fff8e1!important}
+					.mir td{padding:8px 6px!important;vertical-align:middle!important}
+					.mih4{font-size:14px!important;font-weight:600!important;color:#2d3748!important;margin:0!important;display:flex;align-items:center;justify-content:space-between;gap:6px}
+					.mick{text-align:center!important;width:40px!important}
+					.mick input[type=checkbox]{width:28px!important;height:28px!important;cursor:pointer!important;accent-color:#ff9800}
+					.mor{background:#fff8e1!important;border-radius:6px;margin:2px 0}
+					.mor td{padding:8px 10px!important}
+					.msel{border:1px solid #ffe0b2!important;border-radius:6px!important;padding:8px!important;font-size:13px!important;width:100%!important}
+					.msel:focus{border-color:#ff9800!important;outline:none}
+					.mta{border:1px solid #ffe0b2!important;border-radius:6px!important;padding:8px!important;font-size:13px!important;width:100%!important;min-height:50px!important;resize:vertical}
+					.mta:focus{border-color:#ff9800!important;outline:none}
+					.mrg{display:flex;gap:8px;padding:6px 0;flex-wrap:wrap}
+					.mrl{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;cursor:pointer;padding:8px 12px;border-radius:6px;background:#fff;border:1px solid #ffe0b2;transition:all 0.2s}
+					.mrl:hover{border-color:#ff9800;background:#fff8e1}
+					.mrl input{width:18px!important;height:18px!important;accent-color:#ff9800}
+					.mrlc{display:flex;align-items:center;gap:4px}
+					.mipe{display:inline-block;padding:4px 8px;font-size:13px;font-weight:700;color:#e65100;background:#fff8e1;border-radius:6px}
+					.minm{flex:1;color:#2d3748}
+					.morc{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+					.morl{font-size:12px;font-weight:600;color:#5a6678;min-width:80px}
+					</style>
+					<div class='msb'>
+					<input type='text' placeholder='Buscar...' class='msi' id='tr_pedidos_items' onkeyup=\"filtrarTr('tr_pedidos_items','flt_tr_items');validaBtnErase()\" />
+					<button id='erasesearch' onclick=\"$('#tr_pedidos_items').val('');filtrarTr('tr_pedidos_items','flt_tr_items');$('#tr_pedidos_items').focus()\" class='msbtn' style='display:none;'><i class='fa fa-times'></i></button>
+					$btnall
+					</div>
 					<script>
 					function validaBtnErase(){
 						var valsearch=$('#tr_pedidos_items').val();
@@ -1911,16 +1951,12 @@ date_default_timezone_set("America/Bogota");
 							$('#erasesearch').hide();
 						}
 					}
-
-					</script></div>
-					<div class='col-xs-6'>$btnall</div>
+					</script>
+					<div class='mab'>
+					<button class='mabc' id='elbuttonk' onclick=\"cargaHTMLvars('state_proceso','$sender?flag=go_in_plats&id_silla=$id_silla&id_pedido=$id_pedido&rnd=$rnd&id_mesa=$id_mesa&ait=$ait&t=$t','','12000','unival_select_plats')\" ondblclick=\"cargaHTMLvars('state_proceso','$sender?flag=go_in_plats&id_silla=$id_silla&id_pedido=$id_pedido&rnd=$rnd&id_mesa=$id_mesa&ait=$ait&t=$t','','12000','unival_select_plats')\"><i class='fa fa-check-circle'></i> Confirmar</button>
+					<button class='mabx' id='elbuttonk2' onclick=\"closeD('$rnd')\"><i class='fa fa-times'></i></button>
 					</div>
-			
-					<button id='elbuttonk' style='position:fixed;bottom:60px;left:10px;width:45px;height:45px;font-size:20px;border-radius:25px;z-index:600;' class='btn btn-md btn-warning pull-left shadow' onclick=\"cargaHTMLvars('state_proceso','$sender?flag=go_in_plats&id_silla=$id_silla&id_pedido=$id_pedido&rnd=$rnd&id_mesa=$id_mesa&ait=$ait&t=$t','','12000','unival_select_plats')\"  ondblclick=\"cargaHTMLvars('state_proceso','$sender?flag=go_in_plats&id_silla=$id_silla&id_pedido=$id_pedido&rnd=$rnd&id_mesa=$id_mesa&ait=$ait&t=$t','','12000','unival_select_plats')\"><i class='fa fa-check'></i></button> 
-					
-					<button class='btn btn-danger btn-md pull-right shadow' style='position:fixed;bottom:60px;left:65px;width:45px;height:45px;font-size:20px;border-radius:25px;;z-index:600;' id='elbuttonk2' onclick=\"closeD('$rnd')\"><i class='fa fa-remove'></i></button>
-					
-					<div class='box-group' id='accordeon_items'>");	
+					<div class='box-group' id='accordeon_items' style='margin-top:10px;margin-bottom:18px;'>");	
 					$npl=1;
 					$expanded=($_SESSION["restaccordion"]==1) ? "false" : "true";
 					$firscat="";
@@ -1928,17 +1964,16 @@ date_default_timezone_set("America/Bogota");
 						$nplcat=0;
 						$nombre_categoria=str_pad($info_cat["nm"], 30, ' ', STR_PAD_RIGHT);
 						$icono=$info_cat["ic"];
-						echo $gf->utf8("<div class='panel box box-default flt_tr_items'>
-						<div class='box-header'>
-						<h4 class='box-title' style='font-size:28px;width:100%;font-weight:bold;'>
-						<a data-toggle='collapse' data-parent='#accordeon_items' id='clikat_$id_categoria' href='#collapse_cat_$id_categoria' class='text-center clickats' style='width:100%;' aria-expanded='$expanded'>
-							$nombre_categoria <i class='fa  fa-caret-square-o-down pull-right'></i>
+						echo $gf->utf8("<div class='panel mcp flt_tr_items'>
+						<div class='mch'>
+						<h4 class='mct' style='width:100%;'>
+						<a data-toggle='collapse' data-parent='#accordeon_items' id='clikat_$id_categoria' href='#collapse_cat_$id_categoria' class='clickats' style='width:100%;display:flex;justify-content:space-between;align-items:center;color:#fff;text-decoration:none;' aria-expanded='$expanded'>
+							<span><i class='fa fa-folder-open'></i> $nombre_categoria</span> <i class='fa fa-chevron-down'></i>
                      	</a>
-						
 						 </h4>
 						</div>
 						<div id='collapse_cat_$id_categoria' class='panel-collapse collapse non-transition firstrr' aria-expanded='$expanded'>
-						<div class='box-body'><table class='table'>");
+						<div class='box-body' style='padding:0;'><table class='table' style='margin:0;'>");
 						$arplt=$info_cat["pl"];
 						foreach($arplt as $id_plato=>$info_pla){
 							
@@ -1958,24 +1993,24 @@ date_default_timezone_set("America/Bogota");
 								}
 	
 								if($edpz==0){
-									$input_prize="<small class='pull-right'>$ $precio</small>";
+									$input_prize="<span class='mipe'>$ $precio</span>";
 								}else{
-									$input_prize="<small class='pull-right'><div class='input-group'><span class='input-group-addon'>$</span><input type='number' id='iput_$id_plato' name='iput_$id_plato' value='$precio_nc' class='form-control input-sm unival_select_plats' style='width:90px;text-align:right;' /></div></small>";
+									$input_prize="<span class='mipe'><div class='input-group' style='display:inline-flex;'><span class='input-group-addon' style='background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none;'>$</span><input type='number' id='iput_$id_plato' name='iput_$id_plato' value='$precio_nc' class='form-control unival_select_plats' style='width:100px;text-align:right;font-weight:600;border:2px solid #e0e0e0;border-radius:0 8px 8px 0;' /></div></span>";
 								}
-								echo $gf->utf8("<tr class='flt_tr_items $classe cattie_$id_categoria' style='margin-left:3px;'><td><h4>$nombre_plato $input_prize</h4></td><td width='35'><input type='checkbox' class='icheck unival_select_plats' onclick=\"showak('$id_plato');strolin()\" style='width:36px !important;height:36px !important;' value='$id_plato' name='plt_$id_plato' id='plt_$id_plato' /></td></tr>");
+								echo $gf->utf8("<tr class='mir flt_tr_items cattie_$id_categoria'><td class='mih4'><span class='minm'>$nombre_plato</span> $input_prize</td><td class='mick'><input type='checkbox' class='icheck unival_select_plats' onclick=\"showak('$id_plato');strolin()\" value='$id_plato' name='plt_$id_plato' id='plt_$id_plato' /></td></tr>");
 								$nra=0;
 								if(isset($lasopciones[$id_plato])){
 									foreach($lasopciones[$id_plato] as $id_rac=>$gopcion){
 										$nm_racion=$gopcion["nm"];
 				
 										if(count($gopcion["op"])>1){
-											echo $gf->utf8("<tr style='display:none;' class='$classe2 lospingos_$id_plato'><td>$nm_racion <select class='form-control input-sm unival_select_plats' name='racci_$id_rac' id='racci_$id_rac'>");
+											echo $gf->utf8("<tr style='display:none;' class='mor lospingos_$id_plato'><td class='morc'><span class='morl'>$nm_racion</span> <select class='msel unival_select_plats' name='racci_$id_rac' id='racci_$id_rac'>");
 											foreach($gopcion["op"] as $iop=>$namop){
 												echo $gf->utf8("<option value='$iop'>$namop</option>");
 											}
-											echo $gf->utf8("</select></td><td><input type='checkbox' class='cicheck_$id_plato"."_$id_rac unival_select_plats' style='width:30px !important;height:30px !important;' value='$id_rac' name='racc_$id_rac' id='racc_$id_rac' checked='checked' /></td></tr>");
+											echo $gf->utf8("</select></td><td class='mick'><input type='checkbox' class='cicheck_$id_plato"."_$id_rac unival_select_plats' value='$id_rac' name='racc_$id_rac' id='racc_$id_rac' checked='checked' /></td></tr>");
 										}else if($nm_racion!="Composici&oacute;n &uacute;nica"){
-											echo $gf->utf8("<tr style='display:none;' class='$classe2 lospingos_$id_plato'><td>$nm_racion</td><td><input type='checkbox' class='cicheck_$id_plato"."_$id_rac unival_select_plats' style='width:30px !important;height:30px !important;' value='$id_rac' name='racc_$id_rac' id='racc_$id_rac' checked='checked' /></td></tr>");
+											echo $gf->utf8("<tr style='display:none;' class='mor lospingos_$id_plato'><td class='morc'><span class='morl'>$nm_racion</span></td><td class='mick'><input type='checkbox' class='cicheck_$id_plato"."_$id_rac unival_select_plats' value='$id_rac' name='racc_$id_rac' id='racc_$id_rac' checked='checked' /></td></tr>");
 										}
 									}
 								}
@@ -1986,16 +2021,11 @@ date_default_timezone_set("America/Bogota");
 								}elseif($tipl==2){
 									$checkplf="checked='checked'";
 								}
-								echo $gf->utf8("<tr style='display:none;' class='$classe2 lospingos_$id_plato'><td colspan='2'><textarea class='form-control unival_select_plats' id='observ_$id_plato' placeholder='Observaciones adicionales' name='observ_$id_plato'></textarea></td></tr>");
-								echo $gf->utf8("<tr style='display:none;' class='$classe2 lospingos_$id_plato'><td colspan='2'>
+								echo $gf->utf8("<tr style='display:none;' class='mor lospingos_$id_plato'><td colspan='2'><textarea class='mta unival_select_plats' id='observ_$id_plato' placeholder='Observaciones adicionales...' name='observ_$id_plato'></textarea></td></tr>");
+								echo $gf->utf8("<tr style='display:none;' class='mor lospingos_$id_plato'><td colspan='2'>
 								
-								<table><tr><td>
-								<input type='radio' class='unival_select_plats' $checkent id='entradad_$id_plato' name='rolplato_$id_plato' style='width:20px;height:20px;' value='1' /><label for='entradad_$id_plato'>Entrada</label>
-								</td>
-								<td>
-								<input type='radio' class='unival_select_plats' value='2' $checkplf id='entradad_$id_plato' name='rolplato_$id_plato' style='width:20px;height:20px;' /><label for='entradad_$id_plato'>Pl.Fuerte</label>
-								</td>
-								</tr></table>
+								<div class='mrg'><label class='mrl'><input type='radio' class='unival_select_plats' $checkent id='entradad_$id_plato' name='rolplato_$id_plato' value='1' /><span class='mrlc'><i class='fa fa-cutlery'></i> Entrada</span></label>
+								<label class='mrl'><input type='radio' class='unival_select_plats' value='2' $checkplf id='entradad_$id_plato' name='rolplato_$id_plato' /><span class='mrlc'><i class='fa fa-star'></i> Pl.Fuerte</span></label></div>
 								</td></tr>");
 								
 								$npl++;
