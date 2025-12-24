@@ -1902,17 +1902,29 @@ date_default_timezone_set("America/Bogota");
 				
 					echo $gf->utf8("
 					<style>
-					.msb{position:relative;display:flex;gap:5px;padding:6px;background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%);border-radius:8px;box-shadow:0 2px 8px rgba(255,152,0,0.25);margin:8px 0 10px 0}
+					#Modal_$rnd .modal-body{padding:0;overflow:hidden}
+					.mdlg-wrap{display:flex;flex-direction:column;height:70vh;max-height:600px;overflow:hidden}
+					.mdlg-content{flex:1;overflow-y:auto;padding:0 8px 8px 8px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+					.mdlg-footer{flex-shrink:0;padding:8px;background:#fff;border-top:1px solid #eee;display:flex;gap:6px}
+					.msb{flex-shrink:0;display:flex;gap:5px;padding:6px;background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%);border-radius:8px;box-shadow:0 2px 8px rgba(255,152,0,0.25);margin:8px}
 					.msi{flex:1;padding:8px 10px;font-size:13px;border:none;border-radius:6px;background:#fff;box-shadow:inset 0 1px 2px rgba(0,0,0,0.06);min-width:0}
 					.msi:focus{outline:none;box-shadow:0 0 0 2px rgba(255,255,255,0.5)}
 					.msbtn{padding:8px 10px;border:none;border-radius:6px;font-weight:700;font-size:11px;cursor:pointer;background:#fff;color:#e65100;transition:all 0.2s}
-					.mab{position:fixed;bottom:8px;left:5px;right:5px;z-index:600;display:flex;gap:6px}
-					.mabc{flex:1;height:48px;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;box-shadow:0 3px 12px rgba(255,152,0,0.3);display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;transition:all 0.2s}
+					.mabc{flex:1;height:44px;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;box-shadow:0 2px 8px rgba(255,152,0,0.3);display:flex;align-items:center;justify-content:center;gap:6px;background:linear-gradient(135deg,#ff9800,#f57c00);color:#fff;transition:all 0.2s}
 					.mabc:active{transform:scale(0.97)}
-					.mabx{width:48px;height:48px;border:none;border-radius:10px;font-size:16px;cursor:pointer;background:#fff;color:#e65100;border:2px solid #e65100;transition:all 0.2s}
+					.mabx{width:44px;height:44px;border:none;border-radius:8px;font-size:16px;cursor:pointer;background:#fff;color:#e65100;border:2px solid #e65100;transition:all 0.2s}
 					.mabx:active{transform:scale(0.97)}
 					.mcp{border:none!important;border-radius:8px!important;overflow:hidden;margin:0 0 3px 0!important;box-shadow:0 1px 4px rgba(0,0,0,0.06)!important}
 					.mch{background:linear-gradient(135deg,#ff9800 0%,#f57c00 100%)!important;border:none!important;padding:10px 12px!important}
+					@media(max-width:768px){
+						body.modal-open{position:fixed;width:100%;overflow:hidden}
+						#Modal_$rnd{padding:0!important;overflow:hidden!important}
+						#Modal_$rnd .modal-dialog{margin:0;width:100%;height:100%;max-width:100%;overflow:hidden}
+						#Modal_$rnd .modal-content{height:100%;border:none;border-radius:0;overflow:hidden}
+						#Modal_$rnd .modal-body{height:calc(100% - 50px);overflow:hidden}
+						.mdlg-wrap{height:calc(100% - 10px);max-height:none;overflow:hidden}
+						.mdlg-footer{padding:6px;padding-bottom:10px}
+					}
 					.mct{color:#fff!important;font-size:14px!important;font-weight:700!important;margin:0!important;text-shadow:0 1px 2px rgba(0,0,0,0.2)}
 					.mct i{font-size:14px;opacity:0.9}
 					.mir{border:none!important;border-bottom:1px solid #f0f0f0!important}
@@ -1937,6 +1949,7 @@ date_default_timezone_set("America/Bogota");
 					.morc{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 					.morl{font-size:12px;font-weight:600;color:#5a6678;min-width:80px}
 					</style>
+					<div class='mdlg-wrap'>
 					<div class='msb'>
 					<input type='text' placeholder='Buscar...' class='msi' id='tr_pedidos_items' onkeyup=\"filtrarTr('tr_pedidos_items','flt_tr_items');validaBtnErase()\" />
 					<button id='erasesearch' onclick=\"$('#tr_pedidos_items').val('');filtrarTr('tr_pedidos_items','flt_tr_items');$('#tr_pedidos_items').focus()\" class='msbtn' style='display:none;'><i class='fa fa-times'></i></button>
@@ -1952,11 +1965,8 @@ date_default_timezone_set("America/Bogota");
 						}
 					}
 					</script>
-					<div class='mab'>
-					<button class='mabc' id='elbuttonk' onclick=\"cargaHTMLvars('state_proceso','$sender?flag=go_in_plats&id_silla=$id_silla&id_pedido=$id_pedido&rnd=$rnd&id_mesa=$id_mesa&ait=$ait&t=$t','','12000','unival_select_plats')\" ondblclick=\"cargaHTMLvars('state_proceso','$sender?flag=go_in_plats&id_silla=$id_silla&id_pedido=$id_pedido&rnd=$rnd&id_mesa=$id_mesa&ait=$ait&t=$t','','12000','unival_select_plats')\"><i class='fa fa-check-circle'></i> Confirmar</button>
-					<button class='mabx' id='elbuttonk2' onclick=\"closeD('$rnd')\"><i class='fa fa-times'></i></button>
-					</div>
-					<div class='box-group' id='accordeon_items' style='margin-top:10px;margin-bottom:18px;'>");	
+					<div class='mdlg-content'>
+					<div class='box-group' id='accordeon_items'>");	
 					$npl=1;
 					$expanded=($_SESSION["restaccordion"]==1) ? "false" : "true";
 					$firscat="";
@@ -2036,18 +2046,16 @@ date_default_timezone_set("America/Bogota");
 						
 					}
 					echo $gf->utf8("</div>
+					</div>
+					<div class='mdlg-footer'>
+					<button class='mabc' id='elbuttonk' onclick=\"cargaHTMLvars('state_proceso','$sender?flag=go_in_plats&id_silla=$id_silla&id_pedido=$id_pedido&rnd=$rnd&id_mesa=$id_mesa&ait=$ait&t=$t','','12000','unival_select_plats')\"><i class='fa fa-check-circle'></i> Confirmar</button>
+					<button class='mabx' id='elbuttonk2' onclick=\"closeD('$rnd')\"><i class='fa fa-times'></i></button>
+					</div>
+					</div>
 					
 					<script>
 
 
-						function strolin(){
-							var a=$('.modal').scrollTop();
-							var h=$(window).height();
-							$('#elbuttonk').css('top',(Math.round(a)+h-80)+'px');
-							$('#elbuttonk2').css('top',(Math.round(a)+h-80)+'px');
-							$('#tr_pedidos_items').css('top',(Math.round(a)+20)+'px');
-							$('#erasesearch').css('top',(Math.round(a)+18)+'px');
-						}
 						function showak(ipl){
 							if($('#plt_'+ipl+':checked').length>0){
 								$('.lospingos_'+ipl).show();
@@ -2056,8 +2064,6 @@ date_default_timezone_set("America/Bogota");
 							}
 						}
 						$(function(){
-							$('.modal').scroll(strolin);
-							strolin()
 							$('.clickats').on('click', function (e) {
 								e.preventDefault();
 								setTimeout(function(){
