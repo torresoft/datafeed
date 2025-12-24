@@ -304,7 +304,7 @@ if(count($serv)==0){
       <i class="fa fa-heart text-danger" style="margin: 0 5px;"></i>
     </div>
     <strong>
-      <i class="fa fa-copyright"></i> <?php echo date('Y'); ?> RestoFlow
+      <i class="fa fa-copyright"></i> <?php echo date('Y'); ?> Torresoft
     </strong>
   </footer>
   <div class='hidden'>

@@ -1067,9 +1067,9 @@ if(isset($_SESSION["restuiduser"]) && $gf->isUserAdm($_SESSION["restuiduser"],$_
   <!-- /.content-wrapper -->
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Version</b> 1.LC
+      <b>Version</b> 3.LTS
     </div>
-    <strong>Copyright &copy; 2020 <a href="https://torresoft.co">Torresoft</a>.</strong> Derechos Reservados.
+    <strong>Copyright &copy; 2025 <a href="https://torresoft.co">Torresoft</a>.</strong> Derechos Reservados.
   </footer>
 
   <!-- Control Sidebar -->

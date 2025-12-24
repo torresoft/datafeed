@@ -567,16 +567,36 @@ date_default_timezone_set("America/Bogota");
 
 				$resGrupos=$gf->dataSet("SELECT ID_GRUPO, NOMBRE, COLOR FROM mesas_grupos WHERE ID_SITIO=:sitio",array(":sitio"=>$_SESSION["restbus"]));
 
+				echo $gf->utf8("<div class='row'><div class='col-md-12 flexbox' style='gap:6px;flex-wrap:wrap;'>");
+				echo $gf->utf8("<button data-filter='all' class='btn btn-default btn-md btnfiltershome active'><i class='fa fa-th'></i> TODO</button>");
+				echo $gf->utf8("<button data-filter='ocupadas' class='btn btn-warning btn-md btnfiltershome'><i class='fa fa-fire'></i> OCUPADAS</button>");
 				if(count($resGrupos)>1){
-					echo $gf->utf8("<div class='row'><div class='col-md-12 flexbox'>");
-					echo $gf->utf8("<button data-filter='all' class='btn btn-default btn-md btnfiltershome'>TODO</button>");
 					foreach($resGrupos as $grup){
 						$idgr=$grup["ID_GRUPO"];
 						$nombregr=$grup["NOMBRE"];
 						echo $gf->utf8("<button data-filter='.grupi_$idgr' class='btn btn-default btn-md btnfiltershome'>$nombregr</button>");
 					}
-					echo $gf->utf8("</div></div><hr />");
 				}
+				echo $gf->utf8("</div></div>
+				<script>
+				$(function(){
+					$('.btnfiltershome').click(function(){
+						$('.btnfiltershome').removeClass('active');
+						$(this).addClass('active');
+						var f=$(this).data('filter');
+						if(f=='all'){
+							$('.lasmesas').show();
+						}else if(f=='ocupadas'){
+							$('.lasmesas').hide();
+							$('.lasmesas[data-ocupada=\"1\"]').show();
+						}else{
+							$('.lasmesas').hide();
+							$(f).show();
+						}
+					});
+				});
+				</script>
+				<hr style='margin:10px 0;' />");
 				echo $gf->utf8("<div class='row'><div class='col-md-12 flexbox' id='contMesas'>");
 				$resultInt = $gf->dataSet("SELECT M.ID_MESA, M.TIPO, M.NOMBRE, M.ID_GRUPO, P.DIRECCION, P.ID_PEDIDO, P.DESPACHADO, TIMESTAMPDIFF(MINUTE,P.APERTURA,NOW()) AS TIMEOPEN, P.APERTURA, COUNT(DISTINCT SI.ID_SILLA) AS SILLAS, COUNT(SP.ID_PLATO) AS TOTPLA, SUM(SP.LISTO) AS LISTO, SUM(SP.ENTREGADO) AS ENTREGADOS, P.CHEF, P.CAJA, P.DENOM, MS.NOMBRES AS TENDER, SUM(SP.PRECIO*SP.CANTIDAD) AS TOTAL_PEDIDO FROM mesas AS M LEFT JOIN pedidos AS P ON (M.ID_MESA=P.ID_MESA AND P.CIERRE='0000-00-00 00:00:00' AND P.ID_SERVICIO='{$_SESSION["restservice"]}') LEFT JOIN sillas AS SI ON (P.ID_PEDIDO=SI.ID_PEDIDO) LEFT JOIN sillas_platos AS SP ON(SI.ID_SILLA=SP.ID_SILLA) LEFT JOIN platos AS PL ON(PL.ID_PLATO=SP.ID_PLATO) LEFT JOIN usuarios MS ON MS.ID_USUARIO=P.ID_TENDER WHERE M.ID_SITIO='".$_SESSION["restbus"]."' AND M.ESTADO='1' GROUP BY M.ID_MESA ORDER BY M.POS");
 				$_SESSION["tlv"]="P";
@@ -668,7 +688,9 @@ date_default_timezone_set("America/Bogota");
 						}
 						
 						// Determinar badge de estado
+						$ocupada = 0;
 						if($id_pedido!="" && $tipo!="D"){
+							$ocupada = 1;
 							if($chef!="0000-00-00 00:00:00"){
 								$statusBadge = "<span class='badge' style='background:#ff9800; color:#fff; padding:4px 8px; border-radius:10px; font-size:9px; font-weight:600;'><i class='fa fa-fire'></i></span>";
 							}else{
@@ -677,7 +699,7 @@ date_default_timezone_set("America/Bogota");
 						}
 						
 						echo $gf->utf8("
-						<div class='col-lg-2 col-md-3 col-sm-4 col-xs-6 lasmesas grupi_$id_grupo data-filtrable' id='tbl_$id_mesa' t='$tipo' idm='$id_mesa' $onclik timer='$apertura' style='transition: all 0.3s ease; margin-bottom:0; padding:0 2px;'>
+						<div class='col-lg-2 col-md-3 col-sm-4 col-xs-6 lasmesas grupi_$id_grupo data-filtrable' id='tbl_$id_mesa' t='$tipo' idm='$id_mesa' data-ocupada='$ocupada' $onclik timer='$apertura' style='transition: all 0.3s ease; margin-bottom:0; padding:0 2px;'>
 					  <div class='small-box $classd' id='infoboxa_$id_mesa' style='cursor:pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border-radius:10px; box-shadow: 0 2px 8px rgba(0,0,0,0.12); overflow:visible; position:relative;' onmouseover=\"this.style.transform='translateY(-3px) scale(1.01)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.20)';\" onmouseout=\"this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.12)';\">
 							<div class='inner' style='color:$textcolor !important; padding:6px 8px; position:relative; z-index:2;'>
 <div style='display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:5px;'>
