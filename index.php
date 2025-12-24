@@ -57,7 +57,7 @@ if(!isset($_SESSION["restuiduser"])){
 			$avatar="misc/default_avatar.png";
 			$logo=$row["LOGO"];
 			$_SESSION["restuname"]=$nombre;
-			$_SESSION["restumail"]=$usuario;
+			$_SESSION["restumail"]=$correo;
 			
 			$_SESSION["restuiduser"]=$id_user;
 			$_SESSION["restbus"]=$id_empresa;
@@ -212,7 +212,7 @@ if(count($serv)==0){
       <div class="container">
         <div class="navbar-header pull-left">
           <a href="index.php" class="navbar-brand" style="font-weight: 600; letter-spacing: 0.5px;">
-            <img src="./dist/img/logorest.png" alt="RestoFlow Logo" style="height:30px; display:inline-block; margin-right:10px; margin-top:-5px;">
+            <img src="./dist/img/logorest.png" alt="RestoFlow Logo" style="height:45px; display:inline-block;margin-top:-12px;">
           </a>
         </div>
 
